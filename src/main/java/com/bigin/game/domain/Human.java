@@ -14,6 +14,7 @@ public class Human extends User {
     basicSkills.put(Skills.STEAM.getSkillName(), true);
     basicSkills.put(Skills.GUARD.getSkillName(), true);
     this.skill = basicSkills;
+    this.lastAttackTime = 0;
   }
 
   public void levelUp() {

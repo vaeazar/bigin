@@ -26,7 +26,7 @@ public class Orc extends User {
 
   public boolean useAnger() {
     if (useSkill(Skills.ANGER.getSkillName(), Skills.ANGER.getSkillMagicPoint())) {
-      this.status.put(Skills.ANGER.getSkillName(), Skills.ANGER.getSkillDuraion());
+      this.status.put(Skills.ANGER.getSkillName(), Skills.ANGER.getSkillDuration());
       int increaseDamage = (int) Math.round(this.originalDamage * Skills.ANGER.getSkillIncreaseValue());
       int decreaseDefend = (int) Math.round(this.originalDefend * Skills.ANGER.getSkillDecreaseValue());
       this.damage += increaseDamage;
@@ -38,7 +38,7 @@ public class Orc extends User {
         this.damage -= increaseDamage;
         this.defend += decreaseDefend;
       };
-      executor.schedule(task, Skills.ANGER.getSkillDuraion(), TimeUnit.SECONDS);
+      executor.schedule(task, Skills.ANGER.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();
       return true;
     } else {
@@ -48,7 +48,7 @@ public class Orc extends User {
 
   public boolean useFrenzy() {
     if (useSkill(Skills.FRENZY.getSkillName(), Skills.FRENZY.getSkillMagicPoint())) {
-      this.status.put(Skills.FRENZY.getSkillName(), Skills.FRENZY.getSkillDuraion());
+      this.status.put(Skills.FRENZY.getSkillName(), Skills.FRENZY.getSkillDuration());
       int increaseDamage = (int) Math.round(this.originalDamage * Skills.FRENZY.getSkillIncreaseValue());
       this.damage += increaseDamage;
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -57,7 +57,7 @@ public class Orc extends User {
         this.status.remove(Skills.FRENZY.getSkillName());
         this.damage -= increaseDamage;
       };
-      executor.schedule(task, Skills.FRENZY.getSkillDuraion(), TimeUnit.SECONDS);
+      executor.schedule(task, Skills.FRENZY.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();
       return true;
     } else {

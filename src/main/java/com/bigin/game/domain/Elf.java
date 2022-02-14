@@ -27,7 +27,7 @@ public class Elf extends User {
   public boolean useIllusion() {
 
     if (useSkill(Skills.ILLUSION.getSkillName(), Skills.ILLUSION.getSkillMagicPoint())) {
-      this.status.put(Skills.ILLUSION.getSkillName(), Skills.ILLUSION.getSkillDuraion());
+      this.status.put(Skills.ILLUSION.getSkillName(), Skills.ILLUSION.getSkillDuration());
       int increaseAvoid = (int) Math.round(this.originalAvoid * Skills.ILLUSION.getSkillIncreaseValue());
       this.avoid += increaseAvoid;
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -36,7 +36,7 @@ public class Elf extends User {
         this.status.remove(Skills.ILLUSION.getSkillName());
         this.avoid -= increaseAvoid;
       };
-      executor.schedule(task, Skills.ILLUSION.getSkillDuraion(), TimeUnit.SECONDS);
+      executor.schedule(task, Skills.ILLUSION.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();
       return true;
     } else {
@@ -46,7 +46,7 @@ public class Elf extends User {
 
   public boolean useRapid() {
     if (useSkill(Skills.RAPID.getSkillName(), Skills.RAPID.getSkillMagicPoint())) {
-      this.status.put(Skills.RAPID.getSkillName(), Skills.RAPID.getSkillDuraion());
+      this.status.put(Skills.RAPID.getSkillName(), Skills.RAPID.getSkillDuration());
       int increaseAttackSpeed = (int) Math.round(this.originalAttackSpeed * Skills.RAPID.getSkillIncreaseValue());
       this.attackSpeed += increaseAttackSpeed;
       this.lastAttackTime = 0;
@@ -56,7 +56,7 @@ public class Elf extends User {
         this.status.remove(Skills.RAPID.getSkillName());
         this.attackSpeed -= increaseAttackSpeed;
       };
-      executor.schedule(task, Skills.RAPID.getSkillDuraion(), TimeUnit.SECONDS);
+      executor.schedule(task, Skills.RAPID.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();
       return true;
     } else {

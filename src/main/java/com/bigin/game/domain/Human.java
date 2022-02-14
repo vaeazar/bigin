@@ -31,7 +31,7 @@ public class Human extends User {
   public boolean useGuard() {
 
     if (useSkill(Skills.GUARD.getSkillName(), Skills.GUARD.getSkillMagicPoint())) {
-      this.status.put(Skills.GUARD.getSkillName(), Skills.GUARD.getSkillDuraion());
+      this.status.put(Skills.GUARD.getSkillName(), Skills.GUARD.getSkillDuration());
       int increaseDefend = (int) Math.round(this.originalDefend * Skills.GUARD.getSkillIncreaseValue());
       this.defend += increaseDefend;
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -40,7 +40,7 @@ public class Human extends User {
         this.status.remove(Skills.GUARD.getSkillName());
         this.defend -= increaseDefend;
       };
-      executor.schedule(task, Skills.GUARD.getSkillDuraion(), TimeUnit.SECONDS);
+      executor.schedule(task, Skills.GUARD.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();
       return true;
     } else {
@@ -50,13 +50,13 @@ public class Human extends User {
 
   public boolean useInvincible() {
     if (useSkill(Skills.INVINCIBLE.getSkillName(), Skills.INVINCIBLE.getSkillMagicPoint())) {
-      this.status.put(Skills.INVINCIBLE.getSkillName(), Skills.INVINCIBLE.getSkillDuraion());
+      this.status.put(Skills.INVINCIBLE.getSkillName(), Skills.INVINCIBLE.getSkillDuration());
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
       Runnable task = () -> {
         this.status.remove(Skills.INVINCIBLE.getSkillName());
       };
-      executor.schedule(task, Skills.INVINCIBLE.getSkillDuraion(), TimeUnit.SECONDS);
+      executor.schedule(task, Skills.INVINCIBLE.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();
       return true;
     } else {

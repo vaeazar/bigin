@@ -1,6 +1,7 @@
 package com.bigin.game.domain;
 
 import com.bigin.game.common.constant.Skills;
+import com.bigin.game.common.constant.Weapon;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,6 +19,7 @@ public class User {
   protected double originalAttackSpeed;
   protected int originalDefend;
   protected double originalAvoid;
+  protected String weapon;
   protected HashMap<String, Object> status;
   protected HashMap<String, Boolean> skill;
   long lastAttackTime;
@@ -72,7 +74,7 @@ public class User {
 
   public boolean useSteam() {
     if (useSkill(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillMagicPoint())) {
-      this.status.put(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillDuraion());
+      this.status.put(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillDuration());
       int increaseDamage = (int) Math.round(this.originalDamage * Skills.STEAM.getSkillIncreaseValue());
       this.damage += increaseDamage;
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -81,7 +83,7 @@ public class User {
         this.status.remove(Skills.STEAM.getSkillName());
         this.damage -= increaseDamage;
       };
-      executor.schedule(task, Skills.STEAM.getSkillDuraion(), TimeUnit.SECONDS);
+      executor.schedule(task, Skills.STEAM.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();
       return true;
     } else {
@@ -112,6 +114,30 @@ public class User {
         this.alive = false;
       }
       return this.alive;
+    }
+    return true;
+  }
+
+  public boolean useWeapon(String weaponName, String userKind) {
+    Weapon pastWeapon = Weapon.selection(this.weapon);
+    Weapon weapon = Weapon.selection(weaponName);
+    this.damage -= (int) Math.round(this.originalDamage * pastWeapon.getIncreaseAttack());
+    this.damage += (int) Math.round(this.originalDamage * pastWeapon.getDecreaseAttack());
+    this.defend -= (int) Math.round(this.originalDefend * pastWeapon.getIncreaseDefend());
+    this.defend += (int) Math.round(this.originalDefend * pastWeapon.getDecreaseDefend());
+    this.attackSpeed -= (int) Math.round(this.originalAttackSpeed * pastWeapon.getIncreaseAttackSpeed());
+    this.attackSpeed += (int) Math.round(this.originalAttackSpeed * pastWeapon.getDecreaseAttackSpeed());
+
+    if (weapon.getWeaponUseAble().equals(userKind)) {
+      this.damage += (int) Math.round(this.originalDamage * weapon.getIncreaseAttack());
+      this.damage -= (int) Math.round(this.originalDamage * weapon.getDecreaseAttack());
+      this.defend += (int) Math.round(this.originalDefend * weapon.getIncreaseDefend());
+      this.defend -= (int) Math.round(this.originalDefend * weapon.getDecreaseDefend());
+      this.attackSpeed += (int) Math.round(this.originalAttackSpeed * weapon.getIncreaseAttackSpeed());
+      this.attackSpeed -= (int) Math.round(this.originalAttackSpeed * weapon.getDecreaseAttackSpeed());
+    } else {
+      this.weapon = Weapon.HAND.getWeaponName();
+      return false;
     }
     return true;
   }

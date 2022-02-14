@@ -13,14 +13,14 @@ public enum Skills {
 
   private final String skillName;
   private final int skillMagicPoint;
-  private final int skillDuraion;
+  private final int skillDuration;
   private final double skillIncreaseValue;
   private final double skillDecreaseValue;
 
-  Skills(String skillName, int skillMagicPoint, int skillDuraion, double skillIncreaseValue, double skillDecreaseValue){
+  Skills(String skillName, int skillMagicPoint, int skillDuration, double skillIncreaseValue, double skillDecreaseValue){
     this.skillName = skillName;
     this.skillMagicPoint = skillMagicPoint;
-    this.skillDuraion = skillDuraion;
+    this.skillDuration = skillDuration;
     this.skillIncreaseValue = skillIncreaseValue;
     this.skillDecreaseValue = skillDecreaseValue;
   }
@@ -29,8 +29,8 @@ public enum Skills {
     return skillName;
   }
 
-  public int getSkillDuraion() {
-    return skillDuraion;
+  public int getSkillDuration() {
+    return skillDuration;
   }
 
   public int getSkillMagicPoint() {

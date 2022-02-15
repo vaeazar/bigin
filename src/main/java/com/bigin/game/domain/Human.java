@@ -1,6 +1,7 @@
 package com.bigin.game.domain;
 
 import com.bigin.game.common.constant.Skills;
+import com.bigin.game.common.constant.StatPoint;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,6 +14,8 @@ public class Human extends User {
     basicSkills.put(Skills.HEAL.getSkillName(), true);
     basicSkills.put(Skills.STEAM.getSkillName(), true);
     basicSkills.put(Skills.GUARD.getSkillName(), true);
+    this.statPoint = StatPoint.enumToHashMap();
+    this.originalStatPoint = StatPoint.enumToHashMap();
     this.skill = basicSkills;
   }
 

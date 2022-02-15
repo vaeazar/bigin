@@ -1,7 +1,10 @@
 package com.bigin.game.domain;
 
 import com.bigin.game.common.constant.Skills;
+import com.bigin.game.common.constant.SkillsRenew;
+import com.bigin.game.common.constant.StatPoint;
 import com.bigin.game.common.constant.Weapon;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,6 +23,8 @@ public class User {
   protected int originalDefend;
   protected double originalAvoid;
   protected String weapon;
+  protected HashMap<String, Double> statPoint;
+  protected HashMap<String, Double> originalStatPoint;
   protected HashMap<String, Object> status;
   protected HashMap<String, Boolean> skill;
   long lastAttackTime;
@@ -31,8 +36,13 @@ public class User {
   protected int defend;
   protected double avoid;
   protected boolean alive;
+
   public int increaseLevel() {
+    String healthPoint = StatPoint.HEALTH_POINT.getStatName();
+    String magicPoint = StatPoint.MAGIC_POINT.getStatName();
     this.level++;
+    this.statPoint.put(healthPoint, this.originalStatPoint.get(healthPoint));
+    this.statPoint.put(magicPoint, this.originalStatPoint.get(magicPoint));
     return this.level;
   }
 
@@ -47,7 +57,9 @@ public class User {
 
   public boolean useSkill(String skillName, int skillMagicPoint) {
 
-    if (skillMagicPoint > this.magicPoint) {
+    if (skillMagicPoint <= 0) {
+      return false;
+    } else if (skillMagicPoint > this.magicPoint) {
       return false;
     } else if (ObjectUtils.isNotEmpty(this.status.get(skillName))) {
       return false;
@@ -66,6 +78,25 @@ public class User {
 
     if (useSkill(Skills.HEAL.getSkillName(), Skills.HEAL.getSkillMagicPoint())) {
       increaseHealthPoint(Skills.HEAL.getSkillIncreaseValue());
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean useSkill(String skillName) {
+    SkillsRenew skillsRenew = SkillsRenew.selection(skillName);
+    if (useSkill(skillName, skillsRenew.getSkillMagicPoint())) {
+      this.status.put(skillName, skillsRenew.getSkillDuration());
+      skillActive(skillsRenew, false);
+      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+      Runnable task = () -> {
+        this.status.remove(Skills.STEAM.getSkillName());
+        skillActive(skillsRenew, true);
+      };
+      executor.schedule(task, Skills.STEAM.getSkillDuration(), TimeUnit.SECONDS);
+      executor.shutdown();
       return true;
     } else {
       return false;
@@ -118,7 +149,7 @@ public class User {
     return true;
   }
 
-  public boolean useWeapon(String weaponName, String userKind) {
+  public boolean useWeapon(String weaponName, String userKind, Field field) {
     Weapon pastWeapon = Weapon.selection(this.weapon);
     Weapon weapon = Weapon.selection(weaponName);
     this.damage -= (int) Math.round(this.originalDamage * pastWeapon.getIncreaseAttack());
@@ -140,5 +171,34 @@ public class User {
       return false;
     }
     return true;
+  }
+
+  private void skillActive(SkillsRenew skillsRenew, boolean isSkillEnd) {
+
+    for (int i = 0; i < skillsRenew.getSkillIncreaseName().length; i++) {
+      String key = skillsRenew.getSkillIncreaseName()[i];
+      Double value = skillsRenew.getSkillIncreaseValue()[i];
+      double resultValue = Math.round(this.originalStatPoint.get(key) * value);
+      double nowValue = (double) this.status.get(key);
+
+      if (isSkillEnd) {
+        this.status.put(key, nowValue - resultValue);
+      } else {
+        this.status.put(key, nowValue + resultValue);
+      }
+    }
+
+    for (int i = 0; i < skillsRenew.getSkillDecreaseName().length; i++) {
+      String key = skillsRenew.getSkillDecreaseName()[i];
+      Double value = skillsRenew.getSkillDecreaseValue()[i];
+      double resultValue = Math.round(this.originalStatPoint.get(key) * value);
+      double nowValue = (double) this.status.get(key);
+
+      if (isSkillEnd) {
+        this.status.put(key, nowValue + resultValue);
+      } else {
+        this.status.put(key, nowValue - resultValue);
+      }
+    }
   }
 }

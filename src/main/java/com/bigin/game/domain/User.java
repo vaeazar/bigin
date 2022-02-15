@@ -84,8 +84,29 @@ public class User {
     }
   }
 
+  public boolean useEtcSkill(String skillName) {
+    SkillsRenew skillsRenew = SkillsRenew.selection(skillName);
+
+    if (useSkill(skillName, skillsRenew.getSkillMagicPoint())) {
+      this.status.put(skillName, skillsRenew.getSkillDuration());
+      skillActive(skillsRenew, false);
+      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+      Runnable task = () -> {
+        this.status.remove(Skills.STEAM.getSkillName());
+        skillActive(skillsRenew, true);
+      };
+      executor.schedule(task, Skills.STEAM.getSkillDuration(), TimeUnit.SECONDS);
+      executor.shutdown();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean useSkill(String skillName) {
     SkillsRenew skillsRenew = SkillsRenew.selection(skillName);
+
     if (useSkill(skillName, skillsRenew.getSkillMagicPoint())) {
       this.status.put(skillName, skillsRenew.getSkillDuration());
       skillActive(skillsRenew, false);
@@ -175,16 +196,21 @@ public class User {
 
   private void skillActive(SkillsRenew skillsRenew, boolean isSkillEnd) {
 
+    if (skillsRenew.getSkillName().equals("invincible")) {
+
+    } else {
+
+    }
     for (int i = 0; i < skillsRenew.getSkillIncreaseName().length; i++) {
       String key = skillsRenew.getSkillIncreaseName()[i];
       Double value = skillsRenew.getSkillIncreaseValue()[i];
       double resultValue = Math.round(this.originalStatPoint.get(key) * value);
-      double nowValue = (double) this.status.get(key);
+      double nowValue = this.statPoint.get(key);
 
       if (isSkillEnd) {
-        this.status.put(key, nowValue - resultValue);
+        this.statPoint.put(key, nowValue - resultValue);
       } else {
-        this.status.put(key, nowValue + resultValue);
+        this.statPoint.put(key, nowValue + resultValue);
       }
     }
 
@@ -192,12 +218,12 @@ public class User {
       String key = skillsRenew.getSkillDecreaseName()[i];
       Double value = skillsRenew.getSkillDecreaseValue()[i];
       double resultValue = Math.round(this.originalStatPoint.get(key) * value);
-      double nowValue = (double) this.status.get(key);
+      double nowValue = this.statPoint.get(key);
 
       if (isSkillEnd) {
-        this.status.put(key, nowValue + resultValue);
+        this.statPoint.put(key, nowValue + resultValue);
       } else {
-        this.status.put(key, nowValue - resultValue);
+        this.statPoint.put(key, nowValue - resultValue);
       }
     }
   }

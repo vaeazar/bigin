@@ -1,0 +1,41 @@
+package com.bigin.game.common.constant;
+
+import java.util.Arrays;
+import java.util.HashMap;
+
+public enum MonsterStatPoint {
+  WEEK_MONSTER("weekMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,10,0,1000})
+  , NORMAL_MONSTER("normalMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,20,5,1000})
+  , HARD_MONSTER("hardMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,30,10,1000})
+  , FAIL("fail", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,30,10,1000})
+  ;
+
+  private final String monsterName;
+  private final String[] monsterStat;
+  private final double[] monsterValue;
+
+  MonsterStatPoint(String monsterName, String[] monsterStat, double[] monsterValue){
+    this.monsterName = monsterName;
+    this.monsterStat = monsterStat;
+    this.monsterValue = monsterValue;
+  }
+
+  public String getMonsterName() {
+    return monsterName;
+  }
+
+  public String[] getStatName() {
+    return monsterStat;
+  }
+
+  public double[] getStatValue() {
+    return monsterValue;
+  }
+
+  public static MonsterStatPoint selection(String keys) {
+    return Arrays.stream(MonsterStatPoint.values())
+        .filter(status -> status.monsterName.equals(keys))
+        .findFirst()
+        .orElse(FAIL);
+  }
+}

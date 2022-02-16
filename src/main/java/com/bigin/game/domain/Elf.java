@@ -1,6 +1,7 @@
 package com.bigin.game.domain;
 
 import com.bigin.game.common.constant.Skills;
+import com.bigin.game.common.constant.StatPoint;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,7 +14,10 @@ public class Elf extends User {
     basicSkills.put(Skills.HEAL.getSkillName(), true);
     basicSkills.put(Skills.STEAM.getSkillName(), true);
     basicSkills.put(Skills.ILLUSION.getSkillName(), true);
+    this.statPoint = StatPoint.enumToHashMap();
+    this.originalStatPoint = StatPoint.enumToHashMap();
     this.skill = basicSkills;
+    this.lastAttackTime = 0;
   }
 
   public void levelUp() {

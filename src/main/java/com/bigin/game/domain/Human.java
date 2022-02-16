@@ -17,6 +17,7 @@ public class Human extends User {
     this.statPoint = StatPoint.enumToHashMap();
     this.originalStatPoint = StatPoint.enumToHashMap();
     this.skill = basicSkills;
+    this.lastAttackTime = 0;
   }
 
   public void levelUp() {

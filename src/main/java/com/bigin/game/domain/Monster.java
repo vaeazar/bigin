@@ -1,5 +1,7 @@
 package com.bigin.game.domain;
 
+import com.bigin.game.common.constant.MonsterStatPoint;
+import java.util.HashMap;
 import lombok.Data;
 
 @Data
@@ -8,10 +10,24 @@ public class Monster {
   protected int healthPoint;
   protected int damage;
   protected int defend;
+  protected double attackSpeed;
   protected double counter;
   protected boolean alive;
-  protected double attackSpeed;
+  protected HashMap<String, Double> statPoint;
   long lastAttackTime;
+
+  public Monster() {
+    MonsterStatPoint monsterStatPoint = MonsterStatPoint.selection("weekMonster");
+    for (int i = 0; i < monsterStatPoint.getStatValue().length; i++) {
+      statPoint.put(monsterStatPoint.getStatName()[i], monsterStatPoint.getStatValue()[i]);
+    }
+    this.lastAttackTime = 0;
+    this.counter = 70;
+    this.alive = true;
+  }
+
+  public Monster(String monsterName) {
+  }
 
   public int monsterAttack(User user) {
     long now = System.currentTimeMillis();

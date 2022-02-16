@@ -116,7 +116,7 @@ public class User {
         this.status.remove(Skills.STEAM.getSkillName());
         skillActive(skillsRenew, true);
       };
-      executor.schedule(task, Skills.STEAM.getSkillDuration(), TimeUnit.SECONDS);
+      executor.schedule(task, skillsRenew.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();
       return true;
     } else {
@@ -196,11 +196,6 @@ public class User {
 
   private void skillActive(SkillsRenew skillsRenew, boolean isSkillEnd) {
 
-    if (skillsRenew.getSkillName().equals("invincible")) {
-
-    } else {
-
-    }
     for (int i = 0; i < skillsRenew.getSkillIncreaseName().length; i++) {
       String key = skillsRenew.getSkillIncreaseName()[i];
       Double value = skillsRenew.getSkillIncreaseValue()[i];

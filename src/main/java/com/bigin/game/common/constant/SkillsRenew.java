@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum SkillsRenew {
-  HEAL("heal", 10, 0, new String[]{"healthPoint"}, new String[]{}, new double[]{50}, new double[]{})
+  HEAL("heal", 10, 0, new String[]{"healthPoint"}, new String[]{}, new double[]{0.2}, new double[]{})
   , STEAM("steam", 20, 60, new String[]{"damage"}, new String[]{}, new double[]{0.2}, new double[]{})
   , GUARD("guard", 40, 60, new String[]{"defend"}, new String[]{}, new double[]{0.3}, new double[]{})
   , ILLUSION("illusion", 40, 60, new String[]{"avoid"}, new String[]{}, new double[]{0.3}, new double[]{})

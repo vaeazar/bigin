@@ -8,10 +8,10 @@ import java.util.List;
 public enum StatPoint {
   HEALTH_POINT("healthPoint", 200)
   , MAGIC_POINT("magicPoint", 200)
-  , DAMAGE("damage", 10)
+  , DAMAGE("damage", 20)
   , ATTACK_SPEED("attackSpeed", 500)
-  , DEFEND("defend", 10)
-  , AVOID("avoid", 10)
+  , DEFEND("defend", 20)
+  , AVOID("avoid", 30)
   , ELSE("else", 0)
   ;
 

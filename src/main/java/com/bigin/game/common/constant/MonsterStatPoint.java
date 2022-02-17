@@ -1,13 +1,12 @@
 package com.bigin.game.common.constant;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 public enum MonsterStatPoint {
-  WEEK_MONSTER("weekMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,10,0,1000})
-  , NORMAL_MONSTER("normalMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,20,5,1000})
-  , HARD_MONSTER("hardMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,30,10,1000})
-  , FAIL("fail", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,30,10,1000})
+  WEEK_MONSTER("weekMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,25,0,1000})
+  , NORMAL_MONSTER("normalMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,30,5,1000})
+  , HARD_MONSTER("hardMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,40,10,1000})
+  , FAIL("fail", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{0,0,0,0})
   ;
 
   private final String monsterName;

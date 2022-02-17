@@ -18,6 +18,7 @@ public class Monster {
 
   public Monster() {
     MonsterStatPoint monsterStatPoint = MonsterStatPoint.selection("weekMonster");
+    this.statPoint = new HashMap<>();
     for (int i = 0; i < monsterStatPoint.getStatValue().length; i++) {
       statPoint.put(monsterStatPoint.getStatName()[i], monsterStatPoint.getStatValue()[i]);
     }
@@ -27,19 +28,27 @@ public class Monster {
   }
 
   public Monster(String monsterName) {
+    MonsterStatPoint monsterStatPoint = MonsterStatPoint.selection(monsterName);
+    this.statPoint = new HashMap<>();
+    for (int i = 0; i < monsterStatPoint.getStatValue().length; i++) {
+      statPoint.put(monsterStatPoint.getStatName()[i], monsterStatPoint.getStatValue()[i]);
+    }
+    this.lastAttackTime = 0;
+    this.counter = 70;
+    this.alive = true;
   }
 
-  public int monsterAttack(User user) {
+  public boolean monsterAttack(User user) {
     long now = System.currentTimeMillis();
+    Double damage = this.statPoint.get("damage");
+    Double attackSpeed = this.statPoint.get("attackSpeed");
 
     if (now > this.lastAttackTime) {
       long attackDelay = (long) (Math.round((1000.0 / attackSpeed) * 10) / 10.0);
       this.lastAttackTime = now + attackDelay;
-      user.monsterAttackUser(this.damage);
-      return 1;
-    } else {
-      return -1;
+      user.monsterAttackUser(damage);
     }
+    return user.alive;
   }
 
   public boolean isCounterAttack() {
@@ -48,11 +57,15 @@ public class Monster {
   }
 
   public boolean userAttackMonster(User user) {
-    int realDamage = Math.max(user.getDamage() - this.defend, 0);
-    this.healthPoint -= realDamage;
+    double userDamage = user.statPoint.get("damage");
+    double monsterDefend = this.statPoint.get("defend");
+    double monsterHealthPoint = this.statPoint.get("healthPoint");
+    double realDamage = Math.max(userDamage - monsterDefend, 0);
+    double resultHealth = monsterHealthPoint - realDamage;
 
-    if (this.healthPoint <= 0) {
+    if (resultHealth <= 0) {
       this.alive = false;
+      this.statPoint.put("healthPoint", 0.0);
     } else if (isCounterAttack()) {
       int counter = (int) Math.round(this.damage * 0.7);
       user.monsterAttackUser(counter);

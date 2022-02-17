@@ -4,7 +4,6 @@ import com.bigin.game.common.constant.Skills;
 import com.bigin.game.common.constant.SkillsRenew;
 import com.bigin.game.common.constant.StatPoint;
 import com.bigin.game.common.constant.Weapon;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,7 +24,7 @@ public class User {
   protected String weapon;
   protected HashMap<String, Double> statPoint;
   protected HashMap<String, Double> originalStatPoint;
-  protected HashMap<String, Object> status;
+  protected HashMap<String, Object> inActionSkills;
   protected HashMap<String, Boolean> skill;
   long lastAttackTime;
 
@@ -36,6 +35,7 @@ public class User {
   protected int defend;
   protected double avoid;
   protected boolean alive;
+  protected String tribe;
 
   public int increaseLevel() {
     String healthPoint = StatPoint.HEALTH_POINT.getStatName();
@@ -46,13 +46,16 @@ public class User {
     return this.level;
   }
 
-  public int increaseHealthPoint(double healPoint) {
-    this.healthPoint += healPoint;
+  public double increaseHealthPoint(double healPoint) {
+    double healthPoint = this.statPoint.get("healthPoint");
+    double originalHealthPoint = this.originalStatPoint.get("healthPoint");
+    healthPoint += healPoint;
 
-    if (this.healthPoint > this.originalHealthPoint) {
-      this.healthPoint = this.originalHealthPoint;
+    if (healthPoint > originalHealthPoint) {
+      healPoint = originalHealthPoint;
+      this.statPoint.put("healthPoint", healPoint);
     }
-    return this.healthPoint;
+    return healthPoint;
   }
 
   public boolean useSkill(String skillName, int skillMagicPoint) {
@@ -61,7 +64,7 @@ public class User {
       return false;
     } else if (skillMagicPoint > this.magicPoint) {
       return false;
-    } else if (ObjectUtils.isNotEmpty(this.status.get(skillName))) {
+    } else if (ObjectUtils.isNotEmpty(this.inActionSkills.get(skillName))) {
       return false;
     } else {
       this.magicPoint -= skillMagicPoint;
@@ -84,36 +87,16 @@ public class User {
     }
   }
 
-  public boolean useEtcSkill(String skillName) {
+  public boolean useSkillRenew(String skillName) {
     SkillsRenew skillsRenew = SkillsRenew.selection(skillName);
 
     if (useSkill(skillName, skillsRenew.getSkillMagicPoint())) {
-      this.status.put(skillName, skillsRenew.getSkillDuration());
+      this.inActionSkills.put(skillName, skillsRenew.getSkillDuration());
       skillActive(skillsRenew, false);
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
       Runnable task = () -> {
-        this.status.remove(Skills.STEAM.getSkillName());
-        skillActive(skillsRenew, true);
-      };
-      executor.schedule(task, Skills.STEAM.getSkillDuration(), TimeUnit.SECONDS);
-      executor.shutdown();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public boolean useSkill(String skillName) {
-    SkillsRenew skillsRenew = SkillsRenew.selection(skillName);
-
-    if (useSkill(skillName, skillsRenew.getSkillMagicPoint())) {
-      this.status.put(skillName, skillsRenew.getSkillDuration());
-      skillActive(skillsRenew, false);
-      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-      Runnable task = () -> {
-        this.status.remove(Skills.STEAM.getSkillName());
+        this.inActionSkills.remove(skillName);
         skillActive(skillsRenew, true);
       };
       executor.schedule(task, skillsRenew.getSkillDuration(), TimeUnit.SECONDS);
@@ -126,13 +109,13 @@ public class User {
 
   public boolean useSteam() {
     if (useSkill(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillMagicPoint())) {
-      this.status.put(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillDuration());
+      this.inActionSkills.put(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillDuration());
       int increaseDamage = (int) Math.round(this.originalDamage * Skills.STEAM.getSkillIncreaseValue());
       this.damage += increaseDamage;
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
       Runnable task = () -> {
-        this.status.remove(Skills.STEAM.getSkillName());
+        this.inActionSkills.remove(Skills.STEAM.getSkillName());
         this.damage -= increaseDamage;
       };
       executor.schedule(task, Skills.STEAM.getSkillDuration(), TimeUnit.SECONDS);
@@ -143,26 +126,30 @@ public class User {
     }
   }
 
-  public int userAttack(Monster monster) {
+  public boolean userAttack(Monster monster) {
     long now = System.currentTimeMillis();
 
     if (now > this.lastAttackTime) {
+      double attackSpeed = this.statPoint.get("attackSpeed");
       long attackDelay = (long) (Math.round((1000.0 / attackSpeed) * 10) / 10.0);
       this.lastAttackTime = now + attackDelay;
       monster.userAttackMonster(this);
-      return 1;
+      return true;
     } else {
-      return -1;
+      return false;
     }
   }
 
-  public boolean monsterAttackUser(int monsterDamage) {
-    int realDamage = Math.max(monsterDamage - this.defend, 0);
+  public boolean monsterAttackUser(double monsterDamage) {
+    double healthPoint = this.statPoint.get("healthPoint");
+    double defend = this.statPoint.get("defend");
+    int realDamage = (int) Math.max(monsterDamage - defend, 0);
 
-    if (ObjectUtils.isNotEmpty(this.status.get(Skills.INVINCIBLE.getSkillName())) && !avoidAttack()) {
-      this.healthPoint -= realDamage;
+    if (ObjectUtils.isNotEmpty(this.inActionSkills.get(Skills.INVINCIBLE.getSkillName())) && !avoidAttack()) {
+      healthPoint -= realDamage;
+      this.statPoint.put("healthPoint",healthPoint);
 
-      if (this.healthPoint <= 0) {
+      if (healthPoint <= 0) {
         this.alive = false;
       }
       return this.alive;
@@ -170,28 +157,48 @@ public class User {
     return true;
   }
 
-  public boolean useWeapon(String weaponName, String userKind, Field field) {
+  public boolean useWeapon(String weaponName, String tribe) {
     Weapon pastWeapon = Weapon.selection(this.weapon);
     Weapon weapon = Weapon.selection(weaponName);
-    this.damage -= (int) Math.round(this.originalDamage * pastWeapon.getIncreaseAttack());
-    this.damage += (int) Math.round(this.originalDamage * pastWeapon.getDecreaseAttack());
-    this.defend -= (int) Math.round(this.originalDefend * pastWeapon.getIncreaseDefend());
-    this.defend += (int) Math.round(this.originalDefend * pastWeapon.getDecreaseDefend());
-    this.attackSpeed -= (int) Math.round(this.originalAttackSpeed * pastWeapon.getIncreaseAttackSpeed());
-    this.attackSpeed += (int) Math.round(this.originalAttackSpeed * pastWeapon.getDecreaseAttackSpeed());
+    weaponActive(pastWeapon, true);
 
-    if (weapon.getWeaponUseAble().equals(userKind)) {
-      this.damage += (int) Math.round(this.originalDamage * weapon.getIncreaseAttack());
-      this.damage -= (int) Math.round(this.originalDamage * weapon.getDecreaseAttack());
-      this.defend += (int) Math.round(this.originalDefend * weapon.getIncreaseDefend());
-      this.defend -= (int) Math.round(this.originalDefend * weapon.getDecreaseDefend());
-      this.attackSpeed += (int) Math.round(this.originalAttackSpeed * weapon.getIncreaseAttackSpeed());
-      this.attackSpeed -= (int) Math.round(this.originalAttackSpeed * weapon.getDecreaseAttackSpeed());
+    if (weapon.getWeaponUseAble().equals(tribe)) {
+      weaponActive(pastWeapon, false);
+      this.weapon = weaponName;
     } else {
       this.weapon = Weapon.HAND.getWeaponName();
       return false;
     }
     return true;
+  }
+
+  private void weaponActive(Weapon weapon, boolean isWeaponDetach) {
+
+    for (int i = 0; i < weapon.getWeaponIncreaseName().length; i++) {
+      String key = weapon.getWeaponIncreaseName()[i];
+      Double value = weapon.getWeaponIncreaseValue()[i];
+      double resultValue = Math.round(this.originalStatPoint.get(key) * value);
+      double nowValue = this.statPoint.get(key);
+
+      if (isWeaponDetach) {
+        this.statPoint.put(key, nowValue - resultValue);
+      } else {
+        this.statPoint.put(key, nowValue + resultValue);
+      }
+    }
+
+    for (int i = 0; i < weapon.getWeaponDecreaseName().length; i++) {
+      String key = weapon.getWeaponDecreaseName()[i];
+      Double value = weapon.getWeaponDecreaseValue()[i];
+      double resultValue = Math.round(this.originalStatPoint.get(key) * value);
+      double nowValue = this.statPoint.get(key);
+
+      if (isWeaponDetach) {
+        this.statPoint.put(key, nowValue + resultValue);
+      } else {
+        this.statPoint.put(key, nowValue - resultValue);
+      }
+    }
   }
 
   private void skillActive(SkillsRenew skillsRenew, boolean isSkillEnd) {

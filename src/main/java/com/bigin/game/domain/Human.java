@@ -14,18 +14,22 @@ public class Human extends User {
     basicSkills.put(Skills.HEAL.getSkillName(), true);
     basicSkills.put(Skills.STEAM.getSkillName(), true);
     basicSkills.put(Skills.GUARD.getSkillName(), true);
+    this.inActionSkills = new HashMap<>();
+    this.skill = new HashMap<>();
     this.statPoint = StatPoint.enumToHashMap();
     this.originalStatPoint = StatPoint.enumToHashMap();
     this.skill = basicSkills;
     this.lastAttackTime = 0;
+    this.tribe = "human";
   }
 
-  public void levelUp() {
+  public int levelUp() {
     increaseLevel();
 
     if (this.level == 99) {
       this.skill.put(Skills.INVINCIBLE.getSkillName(), true);
     }
+    return this.level;
   }
 
   public void testMethod() {
@@ -35,13 +39,13 @@ public class Human extends User {
   public boolean useGuard() {
 
     if (useSkill(Skills.GUARD.getSkillName(), Skills.GUARD.getSkillMagicPoint())) {
-      this.status.put(Skills.GUARD.getSkillName(), Skills.GUARD.getSkillDuration());
+      this.inActionSkills.put(Skills.GUARD.getSkillName(), Skills.GUARD.getSkillDuration());
       int increaseDefend = (int) Math.round(this.originalDefend * Skills.GUARD.getSkillIncreaseValue());
       this.defend += increaseDefend;
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
       Runnable task = () -> {
-        this.status.remove(Skills.GUARD.getSkillName());
+        this.inActionSkills.remove(Skills.GUARD.getSkillName());
         this.defend -= increaseDefend;
       };
       executor.schedule(task, Skills.GUARD.getSkillDuration(), TimeUnit.SECONDS);
@@ -54,11 +58,11 @@ public class Human extends User {
 
   public boolean useInvincible() {
     if (useSkill(Skills.INVINCIBLE.getSkillName(), Skills.INVINCIBLE.getSkillMagicPoint())) {
-      this.status.put(Skills.INVINCIBLE.getSkillName(), Skills.INVINCIBLE.getSkillDuration());
+      this.inActionSkills.put(Skills.INVINCIBLE.getSkillName(), Skills.INVINCIBLE.getSkillDuration());
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
       Runnable task = () -> {
-        this.status.remove(Skills.INVINCIBLE.getSkillName());
+        this.inActionSkills.remove(Skills.INVINCIBLE.getSkillName());
       };
       executor.schedule(task, Skills.INVINCIBLE.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();

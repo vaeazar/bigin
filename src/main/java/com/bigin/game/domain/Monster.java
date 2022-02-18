@@ -67,6 +67,7 @@ public class Monster {
       this.alive = false;
       this.statPoint.put("healthPoint", 0.0);
     } else if (isCounterAttack()) {
+      this.statPoint.put("healthPoint", resultHealth);
       int counter = (int) Math.round(this.damage * 0.7);
       user.monsterAttackUser(counter);
     }

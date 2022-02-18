@@ -67,20 +67,20 @@ public class Main {
 //      e.printStackTrace();
 //    }
 
-    try {
-      humanService.makeHuman();
-      elfService.makeElf();
-      orcService.makeOrc();
-      monsterService.makeMonster();
-
-      System.out.println("humanService = " + humanService.getHuman().getStatPoint());
-      System.out.println("elfService = " + elfService.getElf().getStatPoint());
-      System.out.println("orcService = " + orcService.getOrc().getStatPoint());
-      System.out.println("monsterService = " + monsterService.monsterAttack(humanService.getHuman()));
-      System.out.println("monsterService = " + humanService.getHuman().getStatPoint());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+//    try {
+//      humanService.makeHuman();
+//      elfService.makeElf();
+//      orcService.makeOrc();
+//      monsterService.makeMonster();
+//
+//      System.out.println("humanService = " + humanService.getHuman().getStatPoint());
+//      System.out.println("elfService = " + elfService.getElf().getStatPoint());
+//      System.out.println("orcService = " + orcService.getOrc().getStatPoint());
+//      System.out.println("monsterService = " + monsterService.monsterAttack(humanService.getHuman()));
+//      System.out.println("monsterService = " + humanService.getHuman().getStatPoint());
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//    }
   }
 
   public static boolean schedulerCheck() {

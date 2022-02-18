@@ -12,7 +12,6 @@ public enum StatPoint {
   , ATTACK_SPEED("attackSpeed", 500)
   , DEFEND("defend", 20)
   , AVOID("avoid", 30)
-  , ELSE("else", 0)
   ;
 
   private final String statName;

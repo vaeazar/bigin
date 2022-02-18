@@ -21,6 +21,8 @@ public class Orc extends User {
     this.skill = basicSkills;
     this.lastAttackTime = 0;
     this.tribe = "orc";
+    this.alive = true;
+    this.level = 1;
   }
 
   public int levelUp() {
@@ -32,44 +34,44 @@ public class Orc extends User {
     return this.level;
   }
 
-  public boolean useAnger() {
-    if (useSkill(Skills.ANGER.getSkillName(), Skills.ANGER.getSkillMagicPoint())) {
-      this.inActionSkills.put(Skills.ANGER.getSkillName(), Skills.ANGER.getSkillDuration());
-      int increaseDamage = (int) Math.round(this.originalDamage * Skills.ANGER.getSkillIncreaseValue());
-      int decreaseDefend = (int) Math.round(this.originalDefend * Skills.ANGER.getSkillDecreaseValue());
-      this.damage += increaseDamage;
-      this.defend -= decreaseDefend;
-      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-      Runnable task = () -> {
-        this.inActionSkills.remove(Skills.ANGER.getSkillName());
-        this.damage -= increaseDamage;
-        this.defend += decreaseDefend;
-      };
-      executor.schedule(task, Skills.ANGER.getSkillDuration(), TimeUnit.SECONDS);
-      executor.shutdown();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public boolean useFrenzy() {
-    if (useSkill(Skills.FRENZY.getSkillName(), Skills.FRENZY.getSkillMagicPoint())) {
-      this.inActionSkills.put(Skills.FRENZY.getSkillName(), Skills.FRENZY.getSkillDuration());
-      int increaseDamage = (int) Math.round(this.originalDamage * Skills.FRENZY.getSkillIncreaseValue());
-      this.damage += increaseDamage;
-      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-      Runnable task = () -> {
-        this.inActionSkills.remove(Skills.FRENZY.getSkillName());
-        this.damage -= increaseDamage;
-      };
-      executor.schedule(task, Skills.FRENZY.getSkillDuration(), TimeUnit.SECONDS);
-      executor.shutdown();
-      return true;
-    } else {
-      return false;
-    }
-  }
+//  public boolean useAnger() {
+//    if (useSkill(Skills.ANGER.getSkillName(), Skills.ANGER.getSkillMagicPoint())) {
+//      this.inActionSkills.put(Skills.ANGER.getSkillName(), Skills.ANGER.getSkillDuration());
+//      int increaseDamage = (int) Math.round(this.originalDamage * Skills.ANGER.getSkillIncreaseValue());
+//      int decreaseDefend = (int) Math.round(this.originalDefend * Skills.ANGER.getSkillDecreaseValue());
+//      this.damage += increaseDamage;
+//      this.defend -= decreaseDefend;
+//      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+//
+//      Runnable task = () -> {
+//        this.inActionSkills.remove(Skills.ANGER.getSkillName());
+//        this.damage -= increaseDamage;
+//        this.defend += decreaseDefend;
+//      };
+//      executor.schedule(task, Skills.ANGER.getSkillDuration(), TimeUnit.SECONDS);
+//      executor.shutdown();
+//      return true;
+//    } else {
+//      return false;
+//    }
+//  }
+//
+//  public boolean useFrenzy() {
+//    if (useSkill(Skills.FRENZY.getSkillName(), Skills.FRENZY.getSkillMagicPoint())) {
+//      this.inActionSkills.put(Skills.FRENZY.getSkillName(), Skills.FRENZY.getSkillDuration());
+//      int increaseDamage = (int) Math.round(this.originalDamage * Skills.FRENZY.getSkillIncreaseValue());
+//      this.damage += increaseDamage;
+//      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+//
+//      Runnable task = () -> {
+//        this.inActionSkills.remove(Skills.FRENZY.getSkillName());
+//        this.damage -= increaseDamage;
+//      };
+//      executor.schedule(task, Skills.FRENZY.getSkillDuration(), TimeUnit.SECONDS);
+//      executor.shutdown();
+//      return true;
+//    } else {
+//      return false;
+//    }
+//  }
 }

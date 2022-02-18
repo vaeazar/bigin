@@ -15,25 +15,12 @@ import org.apache.commons.lang3.ObjectUtils;
 public class User {
 
   protected int level;
-  protected int originalHealthPoint;
-  protected int originalMagicPoint;
-  protected int originalDamage;
-  protected double originalAttackSpeed;
-  protected int originalDefend;
-  protected double originalAvoid;
   protected String weapon;
   protected HashMap<String, Double> statPoint;
   protected HashMap<String, Double> originalStatPoint;
   protected HashMap<String, Object> inActionSkills;
   protected HashMap<String, Boolean> skill;
   long lastAttackTime;
-
-  protected int healthPoint;
-  protected int magicPoint;
-  protected int damage;
-  protected double attackSpeed;
-  protected int defend;
-  protected double avoid;
   protected boolean alive;
   protected String tribe;
 
@@ -58,23 +45,24 @@ public class User {
     return healthPoint;
   }
 
-  public boolean useSkill(String skillName, int skillMagicPoint) {
-
+  public boolean useSkill(String skillName, double skillMagicPoint) {
+    double magicPoint = this.statPoint.get("magicPoint");
     if (skillMagicPoint <= 0) {
       return false;
-    } else if (skillMagicPoint > this.magicPoint) {
+    } else if (skillMagicPoint > magicPoint) {
       return false;
     } else if (ObjectUtils.isNotEmpty(this.inActionSkills.get(skillName))) {
       return false;
     } else {
-      this.magicPoint -= skillMagicPoint;
+      this.statPoint.merge("magicPoint", skillMagicPoint * -1, Double::sum);
     }
     return true;
   }
 
   public boolean avoidAttack() {
     double randomValue = Math.random() * 100;
-    return this.avoid > randomValue;
+    double avoid = this.statPoint.get("avoid");
+    return avoid > randomValue;
   }
 
   public boolean useHeal() {
@@ -107,24 +95,24 @@ public class User {
     }
   }
 
-  public boolean useSteam() {
-    if (useSkill(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillMagicPoint())) {
-      this.inActionSkills.put(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillDuration());
-      int increaseDamage = (int) Math.round(this.originalDamage * Skills.STEAM.getSkillIncreaseValue());
-      this.damage += increaseDamage;
-      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-      Runnable task = () -> {
-        this.inActionSkills.remove(Skills.STEAM.getSkillName());
-        this.damage -= increaseDamage;
-      };
-      executor.schedule(task, Skills.STEAM.getSkillDuration(), TimeUnit.SECONDS);
-      executor.shutdown();
-      return true;
-    } else {
-      return false;
-    }
-  }
+//  public boolean useSteam() {
+//    if (useSkill(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillMagicPoint())) {
+//      this.inActionSkills.put(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillDuration());
+//      int increaseDamage = (int) Math.round(this.originalDamage * Skills.STEAM.getSkillIncreaseValue());
+//      this.damage += increaseDamage;
+//      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+//
+//      Runnable task = () -> {
+//        this.inActionSkills.remove(Skills.STEAM.getSkillName());
+//        this.damage -= increaseDamage;
+//      };
+//      executor.schedule(task, Skills.STEAM.getSkillDuration(), TimeUnit.SECONDS);
+//      executor.shutdown();
+//      return true;
+//    } else {
+//      return false;
+//    }
+//  }
 
   public boolean userAttack(Monster monster) {
     long now = System.currentTimeMillis();
@@ -132,7 +120,7 @@ public class User {
     if (now > this.lastAttackTime) {
       double attackSpeed = this.statPoint.get("attackSpeed");
       long attackDelay = (long) (Math.round((1000.0 / attackSpeed) * 10) / 10.0);
-      this.lastAttackTime = now + attackDelay;
+      this.lastAttackTime = now + (attackDelay * 1000);
       monster.userAttackMonster(this);
       return true;
     } else {
@@ -145,7 +133,7 @@ public class User {
     double defend = this.statPoint.get("defend");
     int realDamage = (int) Math.max(monsterDamage - defend, 0);
 
-    if (ObjectUtils.isNotEmpty(this.inActionSkills.get(Skills.INVINCIBLE.getSkillName())) && !avoidAttack()) {
+    if (ObjectUtils.isEmpty(this.inActionSkills.get(SkillsRenew.INVINCIBLE.getSkillName())) && !avoidAttack()) {
       healthPoint -= realDamage;
       this.statPoint.put("healthPoint",healthPoint);
 

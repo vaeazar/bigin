@@ -13,6 +13,10 @@ public class MonsterService {
     this.monster = new Monster();
   }
 
+  public Monster getMonster() {
+    return this.monster;
+  }
+
   public void makeMonster(String monsterName) {
     this.monster = new Monster(monsterName);
   }

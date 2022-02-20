@@ -35,15 +35,15 @@ public class HumanService {
     return human.levelUp();
   }
 
-  public boolean useSkillRenew(String skillName) {
-    return human.useSkillRenew(skillName);
+  public boolean useSkill(String skillName) {
+    return human.useSkill(skillName);
   }
 
   public boolean useWeapon(String weaponName) {
     return human.useWeapon(weaponName, human.getTribe());
   }
 
-  public boolean monsterAttackUser(int damage) {
+  public boolean monsterAttackUser(double damage) {
     return human.monsterAttackUser(damage);
   }
 }

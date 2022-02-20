@@ -1,9 +1,9 @@
 package com.bigin.game.domain;
 
 import com.bigin.game.common.constant.Skills;
-import com.bigin.game.common.constant.SkillsRenew;
 import com.bigin.game.common.constant.StatPoint;
 import com.bigin.game.common.constant.Weapon;
+import com.bigin.game.common.exception.UserDeadException;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,6 +24,12 @@ public class User {
   protected boolean alive;
   protected String tribe;
 
+  public void checkAlive() {
+    if (!this.alive) {
+      throw new UserDeadException();
+    }
+  }
+
   public int increaseLevel() {
     String healthPoint = StatPoint.HEALTH_POINT.getStatName();
     String magicPoint = StatPoint.MAGIC_POINT.getStatName();
@@ -33,20 +39,9 @@ public class User {
     return this.level;
   }
 
-  public double increaseHealthPoint(double healPoint) {
-    double healthPoint = this.statPoint.get("healthPoint");
-    double originalHealthPoint = this.originalStatPoint.get("healthPoint");
-    healthPoint += healPoint;
-
-    if (healthPoint > originalHealthPoint) {
-      healPoint = originalHealthPoint;
-      this.statPoint.put("healthPoint", healPoint);
-    }
-    return healthPoint;
-  }
-
-  public boolean useSkill(String skillName, double skillMagicPoint) {
+  public boolean isValidSkill(String skillName, double skillMagicPoint) {
     double magicPoint = this.statPoint.get("magicPoint");
+
     if (skillMagicPoint <= 0) {
       return false;
     } else if (skillMagicPoint > magicPoint) {
@@ -65,29 +60,20 @@ public class User {
     return avoid > randomValue;
   }
 
-  public boolean useHeal() {
+  public boolean useSkill(String skillName) {
+    boolean hasSkill = skill.get(skillName) != null && skill.get(skillName);
+    Skills skills = Skills.selection(skillName);
 
-    if (useSkill(Skills.HEAL.getSkillName(), Skills.HEAL.getSkillMagicPoint())) {
-      increaseHealthPoint(Skills.HEAL.getSkillIncreaseValue());
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public boolean useSkillRenew(String skillName) {
-    SkillsRenew skillsRenew = SkillsRenew.selection(skillName);
-
-    if (useSkill(skillName, skillsRenew.getSkillMagicPoint())) {
-      this.inActionSkills.put(skillName, skillsRenew.getSkillDuration());
-      skillActive(skillsRenew, false);
+    if (hasSkill && isValidSkill(skillName, skills.getSkillMagicPoint())) {
+      this.inActionSkills.put(skillName, skills.getSkillDuration());
+      skillActive(skills, false);
       ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
       Runnable task = () -> {
         this.inActionSkills.remove(skillName);
-        skillActive(skillsRenew, true);
+        skillActive(skills, true);
       };
-      executor.schedule(task, skillsRenew.getSkillDuration(), TimeUnit.SECONDS);
+      executor.schedule(task, skills.getSkillDuration(), TimeUnit.SECONDS);
       executor.shutdown();
       return true;
     } else {
@@ -95,32 +81,20 @@ public class User {
     }
   }
 
-//  public boolean useSteam() {
-//    if (useSkill(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillMagicPoint())) {
-//      this.inActionSkills.put(Skills.STEAM.getSkillName(), Skills.STEAM.getSkillDuration());
-//      int increaseDamage = (int) Math.round(this.originalDamage * Skills.STEAM.getSkillIncreaseValue());
-//      this.damage += increaseDamage;
-//      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-//
-//      Runnable task = () -> {
-//        this.inActionSkills.remove(Skills.STEAM.getSkillName());
-//        this.damage -= increaseDamage;
-//      };
-//      executor.schedule(task, Skills.STEAM.getSkillDuration(), TimeUnit.SECONDS);
-//      executor.shutdown();
-//      return true;
-//    } else {
-//      return false;
-//    }
-//  }
-
+  /**
+   * 초당 몇 회 공격할지 정해야한다.
+   * 소수점 둘째자리에서 반올림 처리.
+   * ex) 1초 = 1000, 500이면 1초당 0.5회 공격 따라서 2초에 한번씩 공격
+   * @param monster
+   * @return
+   */
   public boolean userAttack(Monster monster) {
     long now = System.currentTimeMillis();
 
     if (now > this.lastAttackTime) {
       double attackSpeed = this.statPoint.get("attackSpeed");
-      long attackDelay = (long) (Math.round((1000.0 / attackSpeed) * 10) / 10.0);
-      this.lastAttackTime = now + (attackDelay * 1000);
+      long attackDelay = (Math.round((1000.0 / attackSpeed) * 10)) * 100;
+      this.lastAttackTime = now + attackDelay;
       monster.userAttackMonster(this);
       return true;
     } else {
@@ -133,7 +107,7 @@ public class User {
     double defend = this.statPoint.get("defend");
     int realDamage = (int) Math.max(monsterDamage - defend, 0);
 
-    if (ObjectUtils.isEmpty(this.inActionSkills.get(SkillsRenew.INVINCIBLE.getSkillName())) && !avoidAttack()) {
+    if (ObjectUtils.isEmpty(this.inActionSkills.get(Skills.INVINCIBLE.getSkillName())) && !avoidAttack()) {
       healthPoint -= realDamage;
       this.statPoint.put("healthPoint",healthPoint);
 
@@ -151,7 +125,7 @@ public class User {
     weaponActive(pastWeapon, true);
 
     if (weapon.getWeaponUseAble().equals(tribe)) {
-      weaponActive(pastWeapon, false);
+      weaponActive(weapon, false);
       this.weapon = weaponName;
     } else {
       this.weapon = Weapon.HAND.getWeaponName();
@@ -189,11 +163,11 @@ public class User {
     }
   }
 
-  private void skillActive(SkillsRenew skillsRenew, boolean isSkillEnd) {
+  private void skillActive(Skills skills, boolean isSkillEnd) {
 
-    for (int i = 0; i < skillsRenew.getSkillIncreaseName().length; i++) {
-      String key = skillsRenew.getSkillIncreaseName()[i];
-      Double value = skillsRenew.getSkillIncreaseValue()[i];
+    for (int i = 0; i < skills.getSkillIncreaseName().length; i++) {
+      String key = skills.getSkillIncreaseName()[i];
+      Double value = skills.getSkillIncreaseValue()[i];
       double resultValue = Math.round(this.originalStatPoint.get(key) * value);
       double nowValue = this.statPoint.get(key);
 
@@ -204,9 +178,9 @@ public class User {
       }
     }
 
-    for (int i = 0; i < skillsRenew.getSkillDecreaseName().length; i++) {
-      String key = skillsRenew.getSkillDecreaseName()[i];
-      Double value = skillsRenew.getSkillDecreaseValue()[i];
+    for (int i = 0; i < skills.getSkillDecreaseName().length; i++) {
+      String key = skills.getSkillDecreaseName()[i];
+      Double value = skills.getSkillDecreaseValue()[i];
       double resultValue = Math.round(this.originalStatPoint.get(key) * value);
       double nowValue = this.statPoint.get(key);
 

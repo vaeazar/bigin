@@ -44,14 +44,14 @@ public class Monster {
     Double attackSpeed = this.statPoint.get("attackSpeed");
 
     if (now > this.lastAttackTime) {
-      long attackDelay = (long) (Math.round((1000.0 / attackSpeed) * 10) / 10.0);
+      long attackDelay = (Math.round((1000.0 / attackSpeed) * 10)) * 100;
       this.lastAttackTime = now + attackDelay;
       user.monsterAttackUser(damage);
     }
     return user.alive;
   }
 
-  public boolean isCounterAttack() {
+  public boolean checkCounterAttack() {
     double randomValue = Math.random() * 100;
     return this.counter > randomValue;
   }
@@ -66,7 +66,7 @@ public class Monster {
     if (resultHealth <= 0) {
       this.alive = false;
       this.statPoint.put("healthPoint", 0.0);
-    } else if (isCounterAttack()) {
+    } else if (checkCounterAttack()) {
       this.statPoint.put("healthPoint", resultHealth);
       int counter = (int) Math.round(this.damage * 0.7);
       user.monsterAttackUser(counter);

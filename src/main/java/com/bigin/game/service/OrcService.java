@@ -35,8 +35,8 @@ public class OrcService {
     return orc.levelUp();
   }
 
-  public boolean useSkillRenew(String skillName) {
-    return orc.useSkillRenew(skillName);
+  public boolean useSkill(String skillName) {
+    return orc.useSkill(skillName);
   }
 
   public boolean useWeapon(String weaponName) {

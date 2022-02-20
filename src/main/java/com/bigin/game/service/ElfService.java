@@ -35,8 +35,8 @@ public class ElfService {
     return elf.levelUp();
   }
 
-  public boolean useSkillRenew(String skillName) {
-    return elf.useSkillRenew(skillName);
+  public boolean useSkill(String skillName) {
+    return elf.useSkill(skillName);
   }
 
   public boolean useWeapon(String weaponName) {

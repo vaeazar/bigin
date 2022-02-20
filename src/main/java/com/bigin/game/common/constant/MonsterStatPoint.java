@@ -35,6 +35,6 @@ public enum MonsterStatPoint {
     return Arrays.stream(MonsterStatPoint.values())
         .filter(status -> status.monsterName.equals(keys))
         .findFirst()
-        .orElse(FAIL);
+        .orElse(WEEK_MONSTER);
   }
 }

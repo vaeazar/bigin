@@ -3,9 +3,6 @@ package com.bigin.game.domain;
 import com.bigin.game.common.constant.Skills;
 import com.bigin.game.common.constant.StatPoint;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class Orc extends User {
 
@@ -23,6 +20,7 @@ public class Orc extends User {
     this.tribe = "orc";
     this.alive = true;
     this.level = 1;
+    this.weapon = "hand";
   }
 
   public int levelUp() {

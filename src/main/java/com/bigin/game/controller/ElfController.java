@@ -1,5 +1,6 @@
 package com.bigin.game.controller;
 
+import com.bigin.game.common.exception.MonsterDeadException;
 import com.bigin.game.common.exception.UserDeadException;
 import com.bigin.game.service.ElfService;
 import com.bigin.game.service.MonsterService;
@@ -25,6 +26,10 @@ public class ElfController {
   private final ElfService elfService;
   private final MonsterService monsterService;
 
+  /**
+   * 엘프 유저 생성
+   * @return
+   */
   @GetMapping("/selectElf")
   public ResponseEntity selectElf() {
     try {
@@ -36,6 +41,10 @@ public class ElfController {
     }
   }
 
+  /**
+   * 엘프 유저 정보
+   * @return
+   */
   @GetMapping("/userStat")
   public ResponseEntity userStat() {
     try {
@@ -48,6 +57,11 @@ public class ElfController {
     }
   }
 
+  /**
+   * 엘프 유저 스킬 사용
+   * @param param 스킬 정보
+   * @return
+   */
   @PostMapping(
       value = "/useSkill", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
@@ -64,6 +78,11 @@ public class ElfController {
     }
   }
 
+  /**
+   * 엘프 유저 무기 사용
+   * @param param 무기 정보
+   * @return
+   */
   @PostMapping(
       value = "/useWeapon", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
@@ -80,10 +99,15 @@ public class ElfController {
     }
   }
 
+  /**
+   * 엘프 유저 공격
+   * @return
+   */
   @GetMapping("/userAttack")
   public ResponseEntity userAttack() {
     try {
       elfService.getElf().checkAlive();
+      monsterService.getMonster().checkAlive();
       elfService.attackMonster(monsterService.getMonster());
 
       if (!monsterService.getMonster().isAlive()) {
@@ -93,6 +117,24 @@ public class ElfController {
       responseData.put("userInfo", elfService.getElf());
       responseData.put("monsterInfo", monsterService.getMonster());
       return new ResponseEntity<>(responseData, HttpStatus.OK);
+    } catch (MonsterDeadException e) {
+      return new ResponseEntity<>("monster is dead please encounter monster", HttpStatus.BAD_REQUEST);
+    } catch (UserDeadException e) {
+      return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
+    } catch (Exception e) {
+      return new ResponseEntity<>("BAD REQUEST", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  /**
+   * 엘프 유저 포션 사용
+   * @return
+   */
+  @GetMapping("/usePotion")
+  public ResponseEntity usePotion() {
+    try {
+      elfService.getElf().usePotion();
+      return new ResponseEntity<>(elfService.getElf(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {

@@ -43,7 +43,11 @@ public class ElfService {
     return elf.useWeapon(weaponName, elf.getTribe());
   }
 
-  public boolean monsterAttackUser(int damage) {
+  public boolean usePotion() {
+    return elf.usePotion();
+  }
+
+  public boolean monsterAttackUser(double damage) {
     return elf.monsterAttackUser(damage);
   }
 }

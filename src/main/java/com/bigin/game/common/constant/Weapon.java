@@ -2,6 +2,15 @@ package com.bigin.game.common.constant;
 
 import java.util.Arrays;
 
+/**
+ * 무기 정보
+ * weaponName 무기 명
+ * weaponUseAble 무기 종족
+ * weaponIncreaseName 증가 될 스테이터스
+ * weaponDecreaseName 감소 될 스테이터스
+ * weaponIncreaseValue 증가 될 값
+ * weaponDecreaseValue 감소 될 값
+ */
 public enum Weapon {
   HAND("hand", "all", new String[]{}, new String[]{}, new double[]{}, new double[]{})
   , SHORT_SWORD("shortSword", "human", new String[]{"damage"}, new String[]{}, new double[]{0.05}, new double[]{})

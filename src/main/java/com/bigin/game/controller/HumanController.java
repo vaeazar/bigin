@@ -1,5 +1,6 @@
 package com.bigin.game.controller;
 
+import com.bigin.game.common.exception.MonsterDeadException;
 import com.bigin.game.common.exception.UserDeadException;
 import com.bigin.game.service.HumanService;
 import com.bigin.game.service.MonsterService;
@@ -25,13 +26,25 @@ public class HumanController {
   private final HumanService humanService;
   private final MonsterService monsterService;
 
+  /**
+   * 인간 유저 생성
+   * @return
+   */
   @GetMapping("/selectHuman")
   public ResponseEntity selectHuman() {
-    humanService.makeHuman();
-    monsterService.setUserTribe(humanService.getHuman());
-    return new ResponseEntity<>(humanService.getHuman(), HttpStatus.OK);
+    try {
+      humanService.makeHuman();
+      monsterService.setUserTribe(humanService.getHuman());
+      return new ResponseEntity<>(humanService.getHuman(), HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>("BAD REQUEST", HttpStatus.BAD_REQUEST);
+    }
   }
 
+  /**
+   * 인간 유저 정보
+   * @return
+   */
   @GetMapping("/userStat")
   public ResponseEntity userStat() {
     try {
@@ -44,6 +57,11 @@ public class HumanController {
     }
   }
 
+  /**
+   * 인간 유저 스킬 사용
+   * @param param 스킬 정보
+   * @return
+   */
   @PostMapping(
       value = "/useSkill", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
@@ -60,6 +78,11 @@ public class HumanController {
     }
   }
 
+  /**
+   * 인간 유저 무기 사용
+   * @param param 무기 정보
+   * @return
+   */
   @PostMapping(
       value = "/useWeapon", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
@@ -76,10 +99,15 @@ public class HumanController {
     }
   }
 
+  /**
+   * 인간 유저 공격
+   * @return
+   */
   @GetMapping("/userAttack")
   public ResponseEntity userAttack() {
     try {
       humanService.getHuman().checkAlive();
+      monsterService.getMonster().checkAlive();
       humanService.attackMonster(monsterService.getMonster());
 
       if (!monsterService.getMonster().isAlive()) {
@@ -89,6 +117,8 @@ public class HumanController {
       responseData.put("userInfo", humanService.getHuman());
       responseData.put("monsterInfo", monsterService.getMonster());
       return new ResponseEntity<>(responseData, HttpStatus.OK);
+    } catch (MonsterDeadException e) {
+      return new ResponseEntity<>("monster is dead please encounter monster", HttpStatus.BAD_REQUEST);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {

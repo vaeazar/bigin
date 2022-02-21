@@ -1,14 +1,13 @@
 package com.bigin.game;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.bigin.game.controller.HumanController;
-import com.bigin.game.domain.Human;
+import com.bigin.game.controller.ElfController;
+import com.bigin.game.domain.Elf;
 import com.bigin.game.domain.Monster;
-import com.bigin.game.service.HumanService;
+import com.bigin.game.service.ElfService;
 import com.bigin.game.service.MonsterService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,12 +25,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
-public class HumanControllerTest {
+public class ElfControllerTest {
 
   @InjectMocks
-  private HumanController humanController;
+  private ElfController elfController;
   @Mock
-  private HumanService humanService;
+  private ElfService elfService;
   @Mock
   private MonsterService monsterService;
 
@@ -39,16 +38,16 @@ public class HumanControllerTest {
 
   @BeforeEach
   public void init() {
-    mockMvc = MockMvcBuilders.standaloneSetup(humanController).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(elfController).build();
   }
 
-  @DisplayName("Human 생성")
+  @DisplayName("Elf 생성")
   @Test
-  void selectHuman() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+  void selectElf() throws Exception {
+    when(elfService.getElf()).thenReturn(new Elf());
 
     ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.get("/human/selectHuman")
+        MockMvcRequestBuilders.get("/elf/selectElf")
     );
 
     MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
@@ -57,13 +56,13 @@ public class HumanControllerTest {
     assertThat(token).isNotNull();
   }
 
-  @DisplayName("Human 정보")
+  @DisplayName("Elf 정보")
   @Test
-  void getHuman() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+  void getElf() throws Exception {
+    when(elfService.getElf()).thenReturn(new Elf());
 
     ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.get("/human/userStat")
+        MockMvcRequestBuilders.get("/elf/userStat")
     );
 
     MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
@@ -72,13 +71,13 @@ public class HumanControllerTest {
     assertThat(token).isNotNull();
   }
 
-  @DisplayName("Human 스킬")
+  @DisplayName("Elf 스킬")
   @Test
   void useSkill() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+    when(elfService.getElf()).thenReturn(new Elf());
 
     ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.post("/human/useSkill")
+        MockMvcRequestBuilders.post("/elf/useSkill")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content("{\"skillName\" : \"steam\"}")
     );
@@ -89,13 +88,13 @@ public class HumanControllerTest {
     assertThat(token).isNotNull();
   }
 
-  @DisplayName("Human 장비")
+  @DisplayName("Elf 장비")
   @Test
   void useWeapon() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+    when(elfService.getElf()).thenReturn(new Elf());
 
     ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.post("/human/useWeapon")
+        MockMvcRequestBuilders.post("/elf/useWeapon")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content("{\"weaponName\" : \"shortSword\"}")
     );
@@ -106,14 +105,29 @@ public class HumanControllerTest {
     assertThat(token).isNotNull();
   }
 
-  @DisplayName("Human 공격")
+  @DisplayName("Elf 공격")
   @Test
   void userAttack() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+    when(elfService.getElf()).thenReturn(new Elf());
     when(monsterService.getMonster()).thenReturn(new Monster());
 
     ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.get("/human/userAttack")
+        MockMvcRequestBuilders.get("/elf/userAttack")
+    );
+
+    MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+    String token = mvcResult.getResponse().getContentAsString();
+
+    assertThat(token).isNotNull();
+  }
+
+  @DisplayName("Elf 포션 사용")
+  @Test
+  void usePotion() throws Exception {
+    when(elfService.getElf()).thenReturn(new Elf());
+
+    ResultActions resultActions = mockMvc.perform(
+        MockMvcRequestBuilders.get("/elf/usePotion")
     );
 
     MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();

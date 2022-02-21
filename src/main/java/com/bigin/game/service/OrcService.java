@@ -2,6 +2,8 @@ package com.bigin.game.service;
 
 import com.bigin.game.domain.Monster;
 import com.bigin.game.domain.Orc;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,18 @@ public class OrcService {
     }
   }
 
+  public String attackMonsterWithSkill(Monster monster, String uniqueSkill) throws Exception {
+    Method method = orc.getClass().getMethod(uniqueSkill, boolean.class);
+    method.invoke(orc, true);
+
+    if (orc.userAttack(monster)) {
+      method.invoke(orc, false);
+      return "success";
+    } else {
+      return "fail";
+    }
+  }
+
   public int levelUp() {
     return orc.levelUp();
   }
@@ -43,7 +57,7 @@ public class OrcService {
     return orc.useWeapon(weaponName, orc.getTribe());
   }
 
-  public boolean monsterAttackUser(int damage) {
+  public boolean monsterAttackUser(double damage) {
     return orc.monsterAttackUser(damage);
   }
 }

@@ -20,6 +20,8 @@ public class HumanServiceTest {
 
   @InjectMocks
   private HumanService humanService;
+  @InjectMocks
+  private MonsterService monsterService;
 
   @DisplayName("Human 생성")
   @Test
@@ -46,7 +48,7 @@ public class HumanServiceTest {
     assertThat(humanService.getHuman().getLastAttackTime()).isNotEqualTo(human.getLastAttackTime());
   }
 
-  @DisplayName("Monster 공격")
+  @DisplayName("Human 공격")
   @Test
   void monsterAttackUser() {
     Human afterAttack = new Human();
@@ -63,7 +65,7 @@ public class HumanServiceTest {
     assertThat(humanService.getHuman()).isEqualTo(afterAttack);
   }
 
-  @DisplayName("유저 죽음")
+  @DisplayName("Human 죽음")
   @Test
   void userDead() {
     Monster monster = new Monster();
@@ -75,6 +77,23 @@ public class HumanServiceTest {
 
     assertThat(result).isNotNull();
     assertThat(result).isFalse();
+  }
+
+  @DisplayName("Human Iron Will 사용")
+  @Test
+  void useIronWill() {
+    monsterService.makeMonster("hardMonster");
+    Monster monster = monsterService.getMonster();
+    monster.getStatPoint().put("damage", 2000.0);
+
+    humanService.makeHuman();
+    humanService.getHuman().getStatPoint().put("avoid",0.0);
+    boolean result = monsterService.monsterAttack(humanService.getHuman());
+    boolean ironWill = humanService.getHuman().isIronWill();
+
+    assertThat(result).isNotNull();
+    assertThat(result).isTrue();
+    assertThat(ironWill).isFalse();
   }
 
   @DisplayName("Human 레벨업")

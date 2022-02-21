@@ -1,11 +1,17 @@
 package com.bigin.game.common.constant;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
-public enum StatPoint {
+/**
+ * 유저 스테이터스 정보
+ * healthPoint 체력
+ * magicPoint 마나
+ * damage 공격력
+ * attackSpeed 공격속도
+ * defend 방어력
+ * avoid 회피력
+ */
+public enum UserStatPoint {
   HEALTH_POINT("healthPoint", 200)
   , MAGIC_POINT("magicPoint", 200)
   , DAMAGE("damage", 20)
@@ -17,7 +23,7 @@ public enum StatPoint {
   private final String statName;
   private final Double statValue;
 
-  StatPoint(String statName, double statValue){
+  UserStatPoint(String statName, double statValue){
     this.statName = statName;
     this.statValue = statValue;
   }
@@ -33,8 +39,8 @@ public enum StatPoint {
   public static HashMap<String, Double> enumToHashMap() {
     HashMap<String, Double> tempHashMap = new HashMap<>();
 
-    for (StatPoint statPoint : StatPoint.values()) {
-      tempHashMap.put(statPoint.getStatName(), statPoint.getStatValue());
+    for (UserStatPoint userStatPoint : UserStatPoint.values()) {
+      tempHashMap.put(userStatPoint.getStatName(), userStatPoint.getStatValue());
     }
     return tempHashMap;
   }

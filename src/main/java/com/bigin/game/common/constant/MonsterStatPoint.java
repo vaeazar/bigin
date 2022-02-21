@@ -2,6 +2,10 @@ package com.bigin.game.common.constant;
 
 import java.util.Arrays;
 
+/**
+ * 몬스터 스테이터스 정보
+ * WEEK, NORMAL, HARD 순으로 강해짐
+ */
 public enum MonsterStatPoint {
   WEEK_MONSTER("weekMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,25,0,1000})
   , NORMAL_MONSTER("normalMonster", new String[]{"healthPoint", "damage", "defend", "attackSpeed"}, new double[]{60,30,5,1000})

@@ -1,10 +1,16 @@
 package com.bigin.game.domain;
 
 import com.bigin.game.common.constant.Skills;
-import com.bigin.game.common.constant.StatPoint;
+import com.bigin.game.common.constant.UserEtcStatPoint;
+import com.bigin.game.common.constant.UserStatPoint;
+import com.bigin.game.common.constant.Weapon;
 import java.util.HashMap;
+import lombok.Data;
 
+@Data
 public class Orc extends User {
+
+  int berserk;
 
   public Orc() {
     HashMap<String, Boolean> basicSkills = new HashMap<>();
@@ -13,63 +19,53 @@ public class Orc extends User {
     basicSkills.put(Skills.ANGER.getSkillName(), true);
     this.inActionSkills = new HashMap<>();
     this.skill = new HashMap<>();
-    this.statPoint = StatPoint.enumToHashMap();
-    this.originalStatPoint = StatPoint.enumToHashMap();
+    this.statPoint = UserStatPoint.enumToHashMap();
+    this.originalStatPoint = UserStatPoint.enumToHashMap();
     this.skill = basicSkills;
     this.lastAttackTime = 0;
-    this.tribe = "orc";
+    this.tribe = UserEtcStatPoint.ORC;
     this.alive = true;
     this.level = 1;
-    this.weapon = "hand";
+    this.weapon = Weapon.HAND.getWeaponName();
+    this.berserk = UserEtcStatPoint.BERSERK_COUNT;
   }
 
+  /**
+   * 일정 레벨 도달 시 궁극기를 배움
+   * @return
+   */
   public int levelUp() {
-    increaseLevel();
 
-    if (this.level == 99) {
+    if (this.level == UserEtcStatPoint.ULTIMATE_LIMIT) {
+      increaseLevel();
       this.skill.put(Skills.FRENZY.getSkillName(), true);
+    } else if (this.level < UserEtcStatPoint.ULTIMATE_LIMIT) {
+      increaseLevel();
+      this.berserk = UserEtcStatPoint.BERSERK_COUNT;
     }
     return this.level;
   }
 
-//  public boolean useAnger() {
-//    if (useSkill(Skills.ANGER.getSkillName(), Skills.ANGER.getSkillMagicPoint())) {
-//      this.inActionSkills.put(Skills.ANGER.getSkillName(), Skills.ANGER.getSkillDuration());
-//      int increaseDamage = (int) Math.round(this.originalDamage * Skills.ANGER.getSkillIncreaseValue());
-//      int decreaseDefend = (int) Math.round(this.originalDefend * Skills.ANGER.getSkillDecreaseValue());
-//      this.damage += increaseDamage;
-//      this.defend -= decreaseDefend;
-//      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-//
-//      Runnable task = () -> {
-//        this.inActionSkills.remove(Skills.ANGER.getSkillName());
-//        this.damage -= increaseDamage;
-//        this.defend += decreaseDefend;
-//      };
-//      executor.schedule(task, Skills.ANGER.getSkillDuration(), TimeUnit.SECONDS);
-//      executor.shutdown();
-//      return true;
-//    } else {
-//      return false;
-//    }
-//  }
-//
-//  public boolean useFrenzy() {
-//    if (useSkill(Skills.FRENZY.getSkillName(), Skills.FRENZY.getSkillMagicPoint())) {
-//      this.inActionSkills.put(Skills.FRENZY.getSkillName(), Skills.FRENZY.getSkillDuration());
-//      int increaseDamage = (int) Math.round(this.originalDamage * Skills.FRENZY.getSkillIncreaseValue());
-//      this.damage += increaseDamage;
-//      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-//
-//      Runnable task = () -> {
-//        this.inActionSkills.remove(Skills.FRENZY.getSkillName());
-//        this.damage -= increaseDamage;
-//      };
-//      executor.schedule(task, Skills.FRENZY.getSkillDuration(), TimeUnit.SECONDS);
-//      executor.shutdown();
-//      return true;
-//    } else {
-//      return false;
-//    }
-//  }
+  /**
+   * 오크만의 특징 더 강한 공격
+   * @return
+   */
+  public boolean useBerserk(boolean increase) {
+
+    if (this.berserk > 0) {
+      String damage = UserStatPoint.DAMAGE.getStatName();
+      double originalDamage = this.originalStatPoint.get(damage);
+      double nowDamage = this.statPoint.get(damage);
+
+      if (increase) {
+        nowDamage = nowDamage + (originalDamage * UserEtcStatPoint.BERSERK_DAMAGE);
+      } else {
+        nowDamage = nowDamage - (originalDamage * UserEtcStatPoint.BERSERK_DAMAGE);
+      }
+      this.statPoint.put(damage, nowDamage);
+      this.berserk--;
+      return true;
+    }
+    return false;
+  }
 }

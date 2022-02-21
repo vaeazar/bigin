@@ -1,7 +1,7 @@
 package com.bigin.game.domain;
 
 import com.bigin.game.common.constant.Skills;
-import com.bigin.game.common.constant.StatPoint;
+import com.bigin.game.common.constant.UserStatPoint;
 import com.bigin.game.common.constant.Weapon;
 import com.bigin.game.common.exception.UserDeadException;
 import java.util.HashMap;
@@ -24,21 +24,34 @@ public class User {
   protected boolean alive;
   protected String tribe;
 
+  /**
+   * 플레이어가 죽었다면 예외를 발생시켜 다른 기능을 막는다.
+   */
   public void checkAlive() {
     if (!this.alive) {
       throw new UserDeadException();
     }
   }
 
+  /**
+   * 몬스터를 죽이면 레벨 업 모든 체력, 마나를 회복
+   * @return
+   */
   public int increaseLevel() {
-    String healthPoint = StatPoint.HEALTH_POINT.getStatName();
-    String magicPoint = StatPoint.MAGIC_POINT.getStatName();
+    String healthPoint = UserStatPoint.HEALTH_POINT.getStatName();
+    String magicPoint = UserStatPoint.MAGIC_POINT.getStatName();
     this.level++;
     this.statPoint.put(healthPoint, this.originalStatPoint.get(healthPoint));
     this.statPoint.put(magicPoint, this.originalStatPoint.get(magicPoint));
     return this.level;
   }
 
+  /**
+   * 스킬이 사용 가능한지 체크
+   * @param skillName 스킬 명
+   * @param skillMagicPoint 스킬에 사용되는 마나
+   * @return
+   */
   public boolean isValidSkill(String skillName, double skillMagicPoint) {
     double magicPoint = this.statPoint.get("magicPoint");
 
@@ -54,27 +67,40 @@ public class User {
     return true;
   }
 
+  /**
+   * 일정 확률로 회피
+   * @return
+   */
   public boolean avoidAttack() {
     double randomValue = Math.random() * 100;
     double avoid = this.statPoint.get("avoid");
     return avoid > randomValue;
   }
 
+  /**
+   * 스킬 사용 로직
+   * 스케쥴러를 이용해 일정 시간 후에는 증가 된 값을 감소
+   * @param skillName 스킬 명
+   * @return
+   */
   public boolean useSkill(String skillName) {
     boolean hasSkill = skill.get(skillName) != null && skill.get(skillName);
     Skills skills = Skills.selection(skillName);
 
     if (hasSkill && isValidSkill(skillName, skills.getSkillMagicPoint())) {
-      this.inActionSkills.put(skillName, skills.getSkillDuration());
       skillActive(skills, false);
-      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-      Runnable task = () -> {
-        this.inActionSkills.remove(skillName);
-        skillActive(skills, true);
-      };
-      executor.schedule(task, skills.getSkillDuration(), TimeUnit.SECONDS);
-      executor.shutdown();
+      if (skills.getSkillDuration() != 0) {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+        Runnable task = () -> {
+          this.inActionSkills.remove(skillName);
+          skillActive(skills, true);
+        };
+        executor.schedule(task, skills.getSkillDuration(), TimeUnit.SECONDS);
+        executor.shutdown();
+        this.inActionSkills.put(skillName, skills.getSkillDuration());
+      }
       return true;
     } else {
       return false;
@@ -92,7 +118,7 @@ public class User {
     long now = System.currentTimeMillis();
 
     if (now > this.lastAttackTime) {
-      double attackSpeed = this.statPoint.get("attackSpeed");
+      double attackSpeed = this.statPoint.get("attackSpeed") < 1 ? 1 : this.statPoint.get("attackSpeed");
       long attackDelay = (Math.round((1000.0 / attackSpeed) * 10)) * 100;
       this.lastAttackTime = now + attackDelay;
       monster.userAttackMonster(this);
@@ -102,6 +128,11 @@ public class User {
     }
   }
 
+  /**
+   * 몬스터가 반격 시 사용되는 메소드
+   * @param monsterDamage 몬스터의 공격력
+   * @return
+   */
   public boolean monsterAttackUser(double monsterDamage) {
     double healthPoint = this.statPoint.get("healthPoint");
     double defend = this.statPoint.get("defend");
@@ -119,6 +150,12 @@ public class User {
     return true;
   }
 
+  /**
+   * 무기 사용 시 사용되는 메소드
+   * @param weaponName 무기 명
+   * @param tribe 유저 종족
+   * @return
+   */
   public boolean useWeapon(String weaponName, String tribe) {
     Weapon pastWeapon = Weapon.selection(this.weapon);
     Weapon weapon = Weapon.selection(weaponName);
@@ -134,6 +171,11 @@ public class User {
     return true;
   }
 
+  /**
+   * 무기에 따른 상태치 증감 적용
+   * @param weapon 무기 정보
+   * @param isWeaponDetach 무기 탈착 시 true
+   */
   private void weaponActive(Weapon weapon, boolean isWeaponDetach) {
 
     for (int i = 0; i < weapon.getWeaponIncreaseName().length; i++) {
@@ -163,31 +205,41 @@ public class User {
     }
   }
 
+  /**
+   * 스킬에 따른 상태치 증감
+   * @param skills 스킬 정보
+   * @param isSkillEnd 스킬로 인한 상태 원상복구 YN
+   */
   private void skillActive(Skills skills, boolean isSkillEnd) {
 
     for (int i = 0; i < skills.getSkillIncreaseName().length; i++) {
       String key = skills.getSkillIncreaseName()[i];
       Double value = skills.getSkillIncreaseValue()[i];
-      double resultValue = Math.round(this.originalStatPoint.get(key) * value);
+      double increaseValue = Math.round(this.originalStatPoint.get(key) * value);
+      double limitValue = this.originalStatPoint.get(key);
       double nowValue = this.statPoint.get(key);
 
+      if (skills.getSkillHasLimit() && (nowValue + increaseValue) > limitValue) {
+        increaseValue = limitValue - nowValue;
+      }
+
       if (isSkillEnd) {
-        this.statPoint.put(key, nowValue - resultValue);
+        this.statPoint.put(key, nowValue - increaseValue);
       } else {
-        this.statPoint.put(key, nowValue + resultValue);
+        this.statPoint.put(key, nowValue + increaseValue);
       }
     }
 
     for (int i = 0; i < skills.getSkillDecreaseName().length; i++) {
       String key = skills.getSkillDecreaseName()[i];
       Double value = skills.getSkillDecreaseValue()[i];
-      double resultValue = Math.round(this.originalStatPoint.get(key) * value);
+      double decreaseValue = Math.round(this.originalStatPoint.get(key) * value);
       double nowValue = this.statPoint.get(key);
 
       if (isSkillEnd) {
-        this.statPoint.put(key, nowValue + resultValue);
+        this.statPoint.put(key, nowValue + decreaseValue);
       } else {
-        this.statPoint.put(key, nowValue - resultValue);
+        this.statPoint.put(key, nowValue - decreaseValue);
       }
     }
   }

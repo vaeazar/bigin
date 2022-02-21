@@ -2,73 +2,68 @@ package com.bigin.game.common.constant;
 
 import java.util.Arrays;
 
+/**
+ * 무기 정보
+ * weaponName 무기 명
+ * weaponUseAble 무기 종족
+ * weaponIncreaseName 증가 될 스테이터스
+ * weaponDecreaseName 감소 될 스테이터스
+ * weaponIncreaseValue 증가 될 값
+ * weaponDecreaseValue 감소 될 값
+ */
 public enum Weapon {
-  HAND("hand", 0, 0, 0, 0, 0, 0, "all")
-  , SHORT_SWORD("shortSword", 0.05, 0, 0, 0, 0, 0, "human")
-  , LONG_SWORD("longSword", 0.1, 0, 0, 0, 0, 0, "human")
-  , SHORT_BOW("shortBow", 0, 0, 0, 0,  0.05, 0,"elf")
-  , IRON_BOW("ironBow", 0, 0, 0, 0, 0.1, 0, "elf")
-  , SHORT_AXE("shortAxe", 0.1, 0, 0, 0, 0, 0.05, "orc")
-  , IRON_HAMMER("ironHammer", 0.2, 0, 0, 0, 0, 0.1, "orc")
+  HAND("hand", "all", new String[]{}, new String[]{}, new double[]{}, new double[]{})
+  , SHORT_SWORD("shortSword", "human", new String[]{"damage"}, new String[]{}, new double[]{0.05}, new double[]{})
+  , LONG_SWORD("longSword", "human", new String[]{"damage"}, new String[]{}, new double[]{0.1}, new double[]{})
+  , SHORT_BOW("shortBow", "elf", new String[]{"attackSpeed"}, new String[]{}, new double[]{0.05}, new double[]{})
+  , IRON_BOW("ironBow", "elf", new String[]{"attackSpeed"}, new String[]{}, new double[]{0.1}, new double[]{0.1})
+  , SHORT_AXE("shortAxe", "orc", new String[]{"damage"}, new String[]{"attackSpeed"}, new double[]{0.1}, new double[]{0.05})
+  , IRON_HAMMER("ironHammer", "orc", new String[]{"damage"}, new String[]{"attackSpeed"}, new double[]{0.2}, new double[]{0.1})
   ;
 
   private final String weaponName;
-  private final double increaseAttack;
-  private final double decreaseAttack;
-  private final double increaseDefend;
-  private final double decreaseDefend;
-  private final double increaseAttackSpeed;
-  private final double decreaseAttackSpeed;
   private final String weaponUseAble;
+  private final String[] weaponIncreaseName;
+  private final String[] weaponDecreaseName;
+  private final double[] weaponIncreaseValue;
+  private final double[] weaponDecreaseValue;
 
   Weapon(String weaponName
-      , double increaseAttack
-      , double decreaseAttack
-      , double increaseDefend
-      , double decreaseDefend
-      , double increaseAttackSpeed
-      , double decreaseAttackSpeed
-      , String weaponUseAble){
+      , String weaponUseAble
+      , String[] weaponIncreaseName
+      , String[] weaponDecreaseName
+      , double[] weaponIncreaseValue
+      , double[] weaponDecreaseValue){
     this.weaponName = weaponName;
-    this.increaseAttack = increaseAttack;
-    this.decreaseAttack = decreaseAttack;
-    this.increaseDefend = increaseDefend;
-    this.decreaseDefend = decreaseDefend;
-    this.increaseAttackSpeed = increaseAttackSpeed;
-    this.decreaseAttackSpeed = decreaseAttackSpeed;
     this.weaponUseAble = weaponUseAble;
+    this.weaponIncreaseName = weaponIncreaseName;
+    this.weaponDecreaseName = weaponDecreaseName;
+    this.weaponIncreaseValue = weaponIncreaseValue;
+    this.weaponDecreaseValue = weaponDecreaseValue;
   }
 
   public String getWeaponName() {
     return weaponName;
   }
 
-  public double getIncreaseAttack() {
-    return increaseAttack;
-  }
-
-  public double getDecreaseAttack() {
-    return decreaseAttack;
-  }
-
   public String getWeaponUseAble() {
     return weaponUseAble;
   }
 
-  public double getIncreaseDefend() {
-    return increaseDefend;
+  public String[] getWeaponIncreaseName() {
+    return weaponIncreaseName;
   }
 
-  public double getDecreaseDefend() {
-    return decreaseDefend;
+  public String[] getWeaponDecreaseName() {
+    return weaponDecreaseName;
   }
 
-  public double getIncreaseAttackSpeed() {
-    return increaseAttackSpeed;
+  public double[] getWeaponIncreaseValue() {
+    return weaponIncreaseValue;
   }
 
-  public double getDecreaseAttackSpeed() {
-    return decreaseAttackSpeed;
+  public double[] getWeaponDecreaseValue() {
+    return weaponDecreaseValue;
   }
 
   public static Weapon selection(String keys) {

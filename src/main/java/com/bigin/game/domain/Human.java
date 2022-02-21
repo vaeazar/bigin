@@ -6,7 +6,9 @@ import com.bigin.game.common.constant.UserStatPoint;
 import com.bigin.game.common.constant.Weapon;
 import java.util.HashMap;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class Human extends User {
 

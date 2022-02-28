@@ -28,8 +28,8 @@ public class HumanServiceTest {
   void getHuman() {
     Human human = new Human();
 
-    humanService.makeHuman();
-    Human resultHuman = humanService.getHuman();
+    humanService.makeUser();
+    Human resultHuman = humanService.getUser();
 
     assertThat(resultHuman).isNotNull();
     assertThat(resultHuman).isEqualTo(human);
@@ -40,12 +40,12 @@ public class HumanServiceTest {
   void attackMonster() {
     Human human = new Human();
 
-    humanService.makeHuman();
+    humanService.makeUser();
     String resultString = humanService.attackMonster(new Monster());
 
     assertThat(resultString).isNotNull();
     assertThat(resultString).isEqualTo("success");
-    assertThat(humanService.getHuman().getLastAttackTime()).isNotEqualTo(human.getLastAttackTime());
+    assertThat(humanService.getUser().getLastAttackTime()).isNotEqualTo(human.getLastAttackTime());
   }
 
   @DisplayName("Human 공격")
@@ -57,12 +57,12 @@ public class HumanServiceTest {
     Monster monster = new Monster();
 //    monster.getStatPoint().put("damage", 2000.0);
 
-    humanService.makeHuman();
-    humanService.getHuman().getStatPoint().put("avoid",0.0);
+    humanService.makeUser();
+    humanService.getUser().getStatPoint().put("avoid",0.0);
     boolean resultString = humanService.monsterAttackUser(monster.getStatPoint().get("damage"));
 
     assertThat(resultString).isNotNull();
-    assertThat(humanService.getHuman()).isEqualTo(afterAttack);
+    assertThat(humanService.getUser()).isEqualTo(afterAttack);
   }
 
   @DisplayName("Human 죽음")
@@ -71,8 +71,8 @@ public class HumanServiceTest {
     Monster monster = new Monster();
     monster.getStatPoint().put("damage", 2000.0);
 
-    humanService.makeHuman();
-    humanService.getHuman().getStatPoint().put("avoid",0.0);
+    humanService.makeUser();
+    humanService.getUser().getStatPoint().put("avoid",0.0);
     boolean result = humanService.monsterAttackUser(monster.getStatPoint().get("damage"));
 
     assertThat(result).isNotNull();
@@ -86,10 +86,10 @@ public class HumanServiceTest {
     Monster monster = monsterService.getMonster();
     monster.getStatPoint().put("damage", 2000.0);
 
-    humanService.makeHuman();
-    humanService.getHuman().getStatPoint().put("avoid",0.0);
-    boolean result = monsterService.monsterAttack(humanService.getHuman());
-    boolean ironWill = humanService.getHuman().isIronWill();
+    humanService.makeUser();
+    humanService.getUser().getStatPoint().put("avoid",0.0);
+    boolean result = monsterService.monsterAttack(humanService.getUser());
+    boolean ironWill = humanService.getUser().isIronWill();
 
     assertThat(result).isNotNull();
     assertThat(result).isTrue();
@@ -99,23 +99,23 @@ public class HumanServiceTest {
   @DisplayName("Human 레벨업")
   @Test
   void humanLevelUp() {
-    humanService.makeHuman();
+    humanService.makeUser();
     int resultLevel = humanService.levelUp();
 
     assertThat(resultLevel).isEqualTo(2);
-    assertThat(humanService.getHuman().getSkill().get(Skills.INVINCIBLE.getSkillName())).isNull();
+    assertThat(humanService.getUser().getSkill().get(Skills.INVINCIBLE.getSkillName())).isNull();
   }
 
   @DisplayName("Human 궁극기 배움")
   @Test
   void humanGetUltimateSkill() {
-    humanService.makeHuman();
-    humanService.getHuman().setLevel(98);
+    humanService.makeUser();
+    humanService.getUser().setLevel(98);
     int resultLevel = humanService.levelUp();
 
     assertThat(resultLevel).isEqualTo(99);
-    assertThat(humanService.getHuman().getSkill().get(Skills.INVINCIBLE.getSkillName())).isNotNull();
-    assertThat(humanService.getHuman().getSkill().get(Skills.INVINCIBLE.getSkillName())).isTrue();
+    assertThat(humanService.getUser().getSkill().get(Skills.INVINCIBLE.getSkillName())).isNotNull();
+    assertThat(humanService.getUser().getSkill().get(Skills.INVINCIBLE.getSkillName())).isTrue();
   }
 
   @DisplayName("Human 스킬")
@@ -126,9 +126,9 @@ public class HumanServiceTest {
     afterSkill.getStatPoint().merge("magicPoint", -20.0, Double::sum);
     afterSkill.getInActionSkills().put("steam",60);
 
-    humanService.makeHuman();
+    humanService.makeUser();
     boolean result = humanService.useSkill("steam");
-    Human resultHuman = humanService.getHuman();
+    Human resultHuman = humanService.getUser();
 
     assertThat(result).isTrue();
     assertThat(resultHuman).isEqualTo(afterSkill);
@@ -139,7 +139,7 @@ public class HumanServiceTest {
   void getSkillList() {
     Human human = new Human();
 
-    humanService.makeHuman();
+    humanService.makeUser();
     List<String> result = humanService.getSkillList();
 
     assertThat(result).isNotEmpty();
@@ -154,9 +154,9 @@ public class HumanServiceTest {
     afterWeapon.getStatPoint().merge("damage", 1.0, Double::sum);
     afterWeapon.setWeapon("shortSword");
 
-    humanService.makeHuman();
+    humanService.makeUser();
     boolean result = humanService.useWeapon("shortSword");
-    Human resultHuman = humanService.getHuman();
+    Human resultHuman = humanService.getUser();
 
     assertThat(result).isTrue();
     assertThat(resultHuman).isEqualTo(afterWeapon);
@@ -167,9 +167,9 @@ public class HumanServiceTest {
   void failSkill() {
     Human afterSkill = new Human();
 
-    humanService.makeHuman();
+    humanService.makeUser();
     boolean result = humanService.useSkill("nothing");
-    Human resultHuman = humanService.getHuman();
+    Human resultHuman = humanService.getUser();
 
     assertThat(result).isFalse();
     assertThat(resultHuman).isEqualTo(afterSkill);
@@ -181,9 +181,9 @@ public class HumanServiceTest {
     Human afterWeapon = new Human();
     afterWeapon.setWeapon("hand");
 
-    humanService.makeHuman();
+    humanService.makeUser();
     boolean result = humanService.useWeapon("longBow");
-    Human resultHuman = humanService.getHuman();
+    Human resultHuman = humanService.getUser();
 
     assertThat(result).isFalse();
     assertThat(resultHuman).isEqualTo(afterWeapon);

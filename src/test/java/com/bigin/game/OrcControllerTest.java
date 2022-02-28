@@ -5,12 +5,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.bigin.game.controller.OrcController;
-import com.bigin.game.domain.Elf;
 import com.bigin.game.domain.Orc;
 import com.bigin.game.domain.Monster;
 import com.bigin.game.service.OrcService;
 import com.bigin.game.service.MonsterService;
-import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +43,7 @@ public class OrcControllerTest {
   @DisplayName("Orc 생성")
   @Test
   void selectOrc() throws Exception {
-    when(orcService.getOrc()).thenReturn(new Orc());
+    when(orcService.getUser()).thenReturn(new Orc());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.get("/orc/selectOrc")
@@ -60,7 +58,7 @@ public class OrcControllerTest {
   @DisplayName("Orc 정보")
   @Test
   void getOrc() throws Exception {
-    when(orcService.getOrc()).thenReturn(new Orc());
+    when(orcService.getUser()).thenReturn(new Orc());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.get("/orc/userStat")
@@ -75,7 +73,7 @@ public class OrcControllerTest {
   @DisplayName("Orc 스킬")
   @Test
   void useSkill() throws Exception {
-    when(orcService.getOrc()).thenReturn(new Orc());
+    when(orcService.getUser()).thenReturn(new Orc());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.post("/orc/useSkill")
@@ -92,7 +90,7 @@ public class OrcControllerTest {
   @DisplayName("Orc 장비")
   @Test
   void useWeapon() throws Exception {
-    when(orcService.getOrc()).thenReturn(new Orc());
+    when(orcService.getUser()).thenReturn(new Orc());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.post("/orc/useWeapon")
@@ -109,7 +107,7 @@ public class OrcControllerTest {
   @DisplayName("Orc 공격")
   @Test
   void userAttack() throws Exception {
-    when(orcService.getOrc()).thenReturn(new Orc());
+    when(orcService.getUser()).thenReturn(new Orc());
     when(monsterService.getMonster()).thenReturn(new Monster());
 
     ResultActions resultActions = mockMvc.perform(
@@ -125,7 +123,7 @@ public class OrcControllerTest {
   @DisplayName("Orc Berserk 사용")
   @Test
   void useBerserk() throws Exception {
-    when(orcService.getOrc()).thenReturn(new Orc());
+    when(orcService.getUser()).thenReturn(new Orc());
     when(monsterService.getMonster()).thenReturn(new Monster());
 
     ResultActions resultActions = mockMvc.perform(

@@ -7,22 +7,26 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ElfService {
+public class ElfService implements UserService {
 
   Elf elf;
 
-  public void makeElf() {
+  @Override
+  public void makeUser() {
     this.elf = new Elf();
   }
 
-  public Elf getElf() {
+  @Override
+  public Elf getUser() {
     return this.elf;
   }
 
+  @Override
   public List<String> getSkillList() {
     return new ArrayList<>(elf.getSkill().keySet());
   }
 
+  @Override
   public String attackMonster(Monster monster) {
     if (elf.userAttack(monster)) {
       return "success";
@@ -31,14 +35,17 @@ public class ElfService {
     }
   }
 
+  @Override
   public int levelUp() {
     return elf.levelUp();
   }
 
+  @Override
   public boolean useSkill(String skillName) {
     return elf.useSkill(skillName);
   }
 
+  @Override
   public boolean useWeapon(String weaponName) {
     return elf.useWeapon(weaponName, elf.getTribe());
   }
@@ -47,6 +54,7 @@ public class ElfService {
     return elf.usePotion();
   }
 
+  @Override
   public boolean monsterAttackUser(double damage) {
     return elf.monsterAttackUser(damage);
   }

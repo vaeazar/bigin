@@ -9,7 +9,6 @@ import com.bigin.game.domain.Elf;
 import com.bigin.game.domain.Monster;
 import com.bigin.game.service.ElfService;
 import com.bigin.game.service.MonsterService;
-import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +43,7 @@ public class ElfControllerTest {
   @DisplayName("Elf 생성")
   @Test
   void selectElf() throws Exception {
-    when(elfService.getElf()).thenReturn(new Elf());
+    when(elfService.getUser()).thenReturn(new Elf());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.get("/elf/selectElf")
@@ -59,7 +58,7 @@ public class ElfControllerTest {
   @DisplayName("Elf 정보")
   @Test
   void getElf() throws Exception {
-    when(elfService.getElf()).thenReturn(new Elf());
+    when(elfService.getUser()).thenReturn(new Elf());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.get("/elf/userStat")
@@ -74,7 +73,7 @@ public class ElfControllerTest {
   @DisplayName("Elf 스킬")
   @Test
   void useSkill() throws Exception {
-    when(elfService.getElf()).thenReturn(new Elf());
+    when(elfService.getUser()).thenReturn(new Elf());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.post("/elf/useSkill")
@@ -91,7 +90,7 @@ public class ElfControllerTest {
   @DisplayName("Elf 장비")
   @Test
   void useWeapon() throws Exception {
-    when(elfService.getElf()).thenReturn(new Elf());
+    when(elfService.getUser()).thenReturn(new Elf());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.post("/elf/useWeapon")
@@ -108,7 +107,7 @@ public class ElfControllerTest {
   @DisplayName("Elf 공격")
   @Test
   void userAttack() throws Exception {
-    when(elfService.getElf()).thenReturn(new Elf());
+    when(elfService.getUser()).thenReturn(new Elf());
     when(monsterService.getMonster()).thenReturn(new Monster());
 
     ResultActions resultActions = mockMvc.perform(
@@ -124,7 +123,7 @@ public class ElfControllerTest {
   @DisplayName("Elf 포션 사용")
   @Test
   void usePotion() throws Exception {
-    when(elfService.getElf()).thenReturn(new Elf());
+    when(elfService.getUser()).thenReturn(new Elf());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.get("/elf/usePotion")

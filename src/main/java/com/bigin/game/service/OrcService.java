@@ -9,22 +9,26 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OrcService {
+public class OrcService implements UserService {
 
   Orc orc;
 
-  public void makeOrc() {
+  @Override
+  public void makeUser() {
     this.orc = new Orc();
   }
 
-  public Orc getOrc() {
+  @Override
+  public Orc getUser() {
     return this.orc;
   }
 
+  @Override
   public List<String> getSkillList() {
     return new ArrayList<>(orc.getSkill().keySet());
   }
 
+  @Override
   public String attackMonster(Monster monster) {
     if (orc.userAttack(monster)) {
       return "success";
@@ -45,18 +49,22 @@ public class OrcService {
     }
   }
 
+  @Override
   public int levelUp() {
     return orc.levelUp();
   }
 
+  @Override
   public boolean useSkill(String skillName) {
     return orc.useSkill(skillName);
   }
 
+  @Override
   public boolean useWeapon(String weaponName) {
     return orc.useWeapon(weaponName, orc.getTribe());
   }
 
+  @Override
   public boolean monsterAttackUser(double damage) {
     return orc.monsterAttackUser(damage);
   }

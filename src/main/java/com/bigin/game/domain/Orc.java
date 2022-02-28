@@ -61,11 +61,11 @@ public class Orc extends User {
 
       if (increase) {
         nowDamage = nowDamage + (originalDamage * UserEtcStatPoint.BERSERK_DAMAGE);
+        this.berserk--;
       } else {
         nowDamage = nowDamage - (originalDamage * UserEtcStatPoint.BERSERK_DAMAGE);
       }
       this.statPoint.put(damage, nowDamage);
-      this.berserk--;
       return true;
     }
     return false;

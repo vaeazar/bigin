@@ -10,7 +10,6 @@ import com.bigin.game.domain.Human;
 import com.bigin.game.domain.Monster;
 import com.bigin.game.service.HumanService;
 import com.bigin.game.service.MonsterService;
-import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +44,7 @@ public class HumanControllerTest {
   @DisplayName("Human 생성")
   @Test
   void selectHuman() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+    when(humanService.getUser()).thenReturn(new Human());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.get("/human/selectHuman")
@@ -60,7 +59,7 @@ public class HumanControllerTest {
   @DisplayName("Human 정보")
   @Test
   void getHuman() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+    when(humanService.getUser()).thenReturn(new Human());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.get("/human/userStat")
@@ -75,7 +74,7 @@ public class HumanControllerTest {
   @DisplayName("Human 스킬")
   @Test
   void useSkill() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+    when(humanService.getUser()).thenReturn(new Human());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.post("/human/useSkill")
@@ -92,7 +91,7 @@ public class HumanControllerTest {
   @DisplayName("Human 장비")
   @Test
   void useWeapon() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+    when(humanService.getUser()).thenReturn(new Human());
 
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders.post("/human/useWeapon")
@@ -109,7 +108,7 @@ public class HumanControllerTest {
   @DisplayName("Human 공격")
   @Test
   void userAttack() throws Exception {
-    when(humanService.getHuman()).thenReturn(new Human());
+    when(humanService.getUser()).thenReturn(new Human());
     when(monsterService.getMonster()).thenReturn(new Monster());
 
     ResultActions resultActions = mockMvc.perform(

@@ -28,8 +28,8 @@ public class OrcServiceTest {
   void getOrc() {
     Orc orc = new Orc();
 
-    orcService.makeOrc();
-    Orc resultOrc = orcService.getOrc();
+    orcService.makeUser();
+    Orc resultOrc = orcService.getUser();
 
     assertThat(resultOrc).isNotNull();
     assertThat(resultOrc).isEqualTo(orc);
@@ -40,12 +40,12 @@ public class OrcServiceTest {
   void attackMonster() {
     Orc orc = new Orc();
 
-    orcService.makeOrc();
+    orcService.makeUser();
     String resultString = orcService.attackMonster(new Monster());
 
     assertThat(resultString).isNotNull();
     assertThat(resultString).isEqualTo("success");
-    assertThat(orcService.getOrc().getLastAttackTime()).isNotEqualTo(orc.getLastAttackTime());
+    assertThat(orcService.getUser().getLastAttackTime()).isNotEqualTo(orc.getLastAttackTime());
   }
 
   @DisplayName("Orc 공격")
@@ -57,12 +57,12 @@ public class OrcServiceTest {
     Monster monster = new Monster();
 //    monster.getStatPoint().put("damage", 2000.0);
 
-    orcService.makeOrc();
-    orcService.getOrc().getStatPoint().put("avoid",0.0);
+    orcService.makeUser();
+    orcService.getUser().getStatPoint().put("avoid",0.0);
     boolean resultString = orcService.monsterAttackUser(monster.getStatPoint().get("damage"));
 
     assertThat(resultString).isNotNull();
-    assertThat(orcService.getOrc()).isEqualTo(afterAttack);
+    assertThat(orcService.getUser()).isEqualTo(afterAttack);
   }
 
   @DisplayName("Orc 죽음")
@@ -71,8 +71,8 @@ public class OrcServiceTest {
     Monster monster = new Monster();
     monster.getStatPoint().put("damage", 2000.0);
 
-    orcService.makeOrc();
-    orcService.getOrc().getStatPoint().put("avoid",0.0);
+    orcService.makeUser();
+    orcService.getUser().getStatPoint().put("avoid",0.0);
     boolean result = orcService.monsterAttackUser(monster.getStatPoint().get("damage"));
 
     assertThat(result).isNotNull();
@@ -82,23 +82,23 @@ public class OrcServiceTest {
   @DisplayName("Orc 레벨업")
   @Test
   void orcLevelUp() {
-    orcService.makeOrc();
+    orcService.makeUser();
     int resultLevel = orcService.levelUp();
 
     assertThat(resultLevel).isEqualTo(2);
-    assertThat(orcService.getOrc().getSkill().get(Skills.INVINCIBLE.getSkillName())).isNull();
+    assertThat(orcService.getUser().getSkill().get(Skills.INVINCIBLE.getSkillName())).isNull();
   }
 
   @DisplayName("Orc 궁극기 배움")
   @Test
   void orcGetUltimateSkill() {
-    orcService.makeOrc();
-    orcService.getOrc().setLevel(98);
+    orcService.makeUser();
+    orcService.getUser().setLevel(98);
     int resultLevel = orcService.levelUp();
 
     assertThat(resultLevel).isEqualTo(99);
-    assertThat(orcService.getOrc().getSkill().get(Skills.FRENZY.getSkillName())).isNotNull();
-    assertThat(orcService.getOrc().getSkill().get(Skills.FRENZY.getSkillName())).isTrue();
+    assertThat(orcService.getUser().getSkill().get(Skills.FRENZY.getSkillName())).isNotNull();
+    assertThat(orcService.getUser().getSkill().get(Skills.FRENZY.getSkillName())).isTrue();
   }
 
   @DisplayName("Orc 스킬")
@@ -109,9 +109,9 @@ public class OrcServiceTest {
     afterSkill.getStatPoint().merge("magicPoint", -20.0, Double::sum);
     afterSkill.getInActionSkills().put("steam",60);
 
-    orcService.makeOrc();
+    orcService.makeUser();
     boolean result = orcService.useSkill("steam");
-    Orc resultOrc = orcService.getOrc();
+    Orc resultOrc = orcService.getUser();
 
     assertThat(result).isTrue();
     assertThat(resultOrc).isEqualTo(afterSkill);
@@ -122,7 +122,7 @@ public class OrcServiceTest {
   void getSkillList() {
     Orc orc = new Orc();
 
-    orcService.makeOrc();
+    orcService.makeUser();
     List<String> result = orcService.getSkillList();
 
     assertThat(result).isNotEmpty();
@@ -138,9 +138,9 @@ public class OrcServiceTest {
     afterWeapon.getStatPoint().merge("attackSpeed", -25.0, Double::sum);
     afterWeapon.setWeapon("shortAxe");
 
-    orcService.makeOrc();
+    orcService.makeUser();
     boolean result = orcService.useWeapon("shortAxe");
-    Orc resultOrc = orcService.getOrc();
+    Orc resultOrc = orcService.getUser();
 
     assertThat(result).isTrue();
     assertThat(resultOrc).isEqualTo(afterWeapon);
@@ -151,9 +151,9 @@ public class OrcServiceTest {
   void failSkill() {
     Orc afterSkill = new Orc();
 
-    orcService.makeOrc();
+    orcService.makeUser();
     boolean result = orcService.useSkill("nothing");
-    Orc resultOrc = orcService.getOrc();
+    Orc resultOrc = orcService.getUser();
 
     assertThat(result).isFalse();
     assertThat(resultOrc).isEqualTo(afterSkill);
@@ -165,9 +165,9 @@ public class OrcServiceTest {
     Orc afterWeapon = new Orc();
     afterWeapon.setWeapon("hand");
 
-    orcService.makeOrc();
+    orcService.makeUser();
     boolean result = orcService.useWeapon("longSword");
-    Orc resultOrc = orcService.getOrc();
+    Orc resultOrc = orcService.getUser();
 
     assertThat(result).isFalse();
     assertThat(resultOrc).isEqualTo(afterWeapon);
@@ -179,7 +179,7 @@ public class OrcServiceTest {
     Monster afterMonster = new Monster();
     afterMonster.getStatPoint().put("healthPoint", 30.0);
 
-    orcService.makeOrc();
+    orcService.makeUser();
     monsterService.makeMonster();
     String resultString = orcService.attackMonsterWithSkill(monsterService.getMonster(), "useBerserk");
 

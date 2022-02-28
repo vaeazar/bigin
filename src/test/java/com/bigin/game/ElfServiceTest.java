@@ -1,8 +1,6 @@
 package com.bigin.game;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.bigin.game.common.constant.Skills;
 import com.bigin.game.domain.Elf;
@@ -15,9 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @ExtendWith(MockitoExtension.class)
 public class ElfServiceTest {
@@ -30,8 +25,8 @@ public class ElfServiceTest {
   void getElf() {
     Elf elf = new Elf();
 
-    elfService.makeElf();
-    Elf resultElf = elfService.getElf();
+    elfService.makeUser();
+    Elf resultElf = elfService.getUser();
 
     assertThat(resultElf).isNotNull();
     assertThat(resultElf).isEqualTo(elf);
@@ -42,12 +37,12 @@ public class ElfServiceTest {
   void attackMonster() {
     Elf elf = new Elf();
 
-    elfService.makeElf();
+    elfService.makeUser();
     String resultString = elfService.attackMonster(new Monster());
 
     assertThat(resultString).isNotNull();
     assertThat(resultString).isEqualTo("success");
-    assertThat(elfService.getElf().getLastAttackTime()).isNotEqualTo(elf.getLastAttackTime());
+    assertThat(elfService.getUser().getLastAttackTime()).isNotEqualTo(elf.getLastAttackTime());
   }
 
   @DisplayName("Elf 공격")
@@ -59,12 +54,12 @@ public class ElfServiceTest {
     Monster monster = new Monster();
 //    monster.getStatPoint().put("damage", 2000.0);
 
-    elfService.makeElf();
-    elfService.getElf().getStatPoint().put("avoid",0.0);
+    elfService.makeUser();
+    elfService.getUser().getStatPoint().put("avoid",0.0);
     boolean resultString = elfService.monsterAttackUser(monster.getStatPoint().get("damage"));
 
     assertThat(resultString).isNotNull();
-    assertThat(elfService.getElf()).isEqualTo(afterAttack);
+    assertThat(elfService.getUser()).isEqualTo(afterAttack);
   }
 
   @DisplayName("Elf 죽음")
@@ -73,8 +68,8 @@ public class ElfServiceTest {
     Monster monster = new Monster();
     monster.getStatPoint().put("damage", 2000.0);
 
-    elfService.makeElf();
-    elfService.getElf().getStatPoint().put("avoid",0.0);
+    elfService.makeUser();
+    elfService.getUser().getStatPoint().put("avoid",0.0);
     boolean result = elfService.monsterAttackUser(monster.getStatPoint().get("damage"));
 
     assertThat(result).isNotNull();
@@ -84,23 +79,23 @@ public class ElfServiceTest {
   @DisplayName("Elf 레벨업")
   @Test
   void elfLevelUp() {
-    elfService.makeElf();
+    elfService.makeUser();
     int resultLevel = elfService.levelUp();
 
     assertThat(resultLevel).isEqualTo(2);
-    assertThat(elfService.getElf().getSkill().get(Skills.INVINCIBLE.getSkillName())).isNull();
+    assertThat(elfService.getUser().getSkill().get(Skills.INVINCIBLE.getSkillName())).isNull();
   }
 
   @DisplayName("Elf 궁극기 배움")
   @Test
   void elfGetUltimateSkill() {
-    elfService.makeElf();
-    elfService.getElf().setLevel(98);
+    elfService.makeUser();
+    elfService.getUser().setLevel(98);
     int resultLevel = elfService.levelUp();
 
     assertThat(resultLevel).isEqualTo(99);
-    assertThat(elfService.getElf().getSkill().get(Skills.RAPID.getSkillName())).isNotNull();
-    assertThat(elfService.getElf().getSkill().get(Skills.RAPID.getSkillName())).isTrue();
+    assertThat(elfService.getUser().getSkill().get(Skills.RAPID.getSkillName())).isNotNull();
+    assertThat(elfService.getUser().getSkill().get(Skills.RAPID.getSkillName())).isTrue();
   }
 
   @DisplayName("Elf 스킬")
@@ -111,9 +106,9 @@ public class ElfServiceTest {
     afterSkill.getStatPoint().merge("magicPoint", -20.0, Double::sum);
     afterSkill.getInActionSkills().put("steam",60);
 
-    elfService.makeElf();
+    elfService.makeUser();
     boolean result = elfService.useSkill("steam");
-    Elf resultElf = elfService.getElf();
+    Elf resultElf = elfService.getUser();
 
     assertThat(result).isTrue();
     assertThat(resultElf).isEqualTo(afterSkill);
@@ -124,7 +119,7 @@ public class ElfServiceTest {
   void getSkillList() {
     Elf elf = new Elf();
 
-    elfService.makeElf();
+    elfService.makeUser();
     List<String> result = elfService.getSkillList();
 
     assertThat(result).isNotEmpty();
@@ -139,9 +134,9 @@ public class ElfServiceTest {
     afterWeapon.getStatPoint().merge("attackSpeed", 25.0, Double::sum);
     afterWeapon.setWeapon("shortBow");
 
-    elfService.makeElf();
+    elfService.makeUser();
     boolean result = elfService.useWeapon("shortBow");
-    Elf resultElf = elfService.getElf();
+    Elf resultElf = elfService.getUser();
 
     assertThat(result).isTrue();
     assertThat(resultElf).isEqualTo(afterWeapon);
@@ -152,9 +147,9 @@ public class ElfServiceTest {
   void failSkill() {
     Elf afterSkill = new Elf();
 
-    elfService.makeElf();
+    elfService.makeUser();
     boolean result = elfService.useSkill("nothing");
-    Elf resultElf = elfService.getElf();
+    Elf resultElf = elfService.getUser();
 
     assertThat(result).isFalse();
     assertThat(resultElf).isEqualTo(afterSkill);
@@ -166,9 +161,9 @@ public class ElfServiceTest {
     Elf afterWeapon = new Elf();
     afterWeapon.setWeapon("hand");
 
-    elfService.makeElf();
+    elfService.makeUser();
     boolean result = elfService.useWeapon("longSword");
-    Elf resultElf = elfService.getElf();
+    Elf resultElf = elfService.getUser();
 
     assertThat(result).isFalse();
     assertThat(resultElf).isEqualTo(afterWeapon);
@@ -180,10 +175,10 @@ public class ElfServiceTest {
     Elf afterPotion = new Elf();
     afterPotion.setPotion(4);
 
-    elfService.makeElf();
-    elfService.getElf().getStatPoint().put("healthPoint", 180.0);
+    elfService.makeUser();
+    elfService.getUser().getStatPoint().put("healthPoint", 180.0);
     boolean result = elfService.usePotion();
-    Elf resultElf = elfService.getElf();
+    Elf resultElf = elfService.getUser();
 
     assertThat(result).isTrue();
     assertThat(resultElf).isEqualTo(afterPotion);

@@ -33,9 +33,9 @@ public class HumanController {
   @GetMapping("/selectHuman")
   public ResponseEntity selectHuman() {
     try {
-      humanService.makeHuman();
-      monsterService.setUserTribe(humanService.getHuman());
-      return new ResponseEntity<>(humanService.getHuman(), HttpStatus.OK);
+      humanService.makeUser();
+      monsterService.setUserTribe(humanService.getUser());
+      return new ResponseEntity<>(humanService.getUser(), HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>("BAD REQUEST", HttpStatus.BAD_REQUEST);
     }
@@ -48,8 +48,8 @@ public class HumanController {
   @GetMapping("/userStat")
   public ResponseEntity userStat() {
     try {
-      humanService.getHuman().checkAlive();
-      return new ResponseEntity<>(humanService.getHuman(), HttpStatus.OK);
+      humanService.getUser().checkAlive();
+      return new ResponseEntity<>(humanService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
@@ -67,10 +67,10 @@ public class HumanController {
   @ResponseBody
   public ResponseEntity useSkill(@RequestBody HashMap<String, Object> param) {
     try {
-      humanService.getHuman().checkAlive();
+      humanService.getUser().checkAlive();
       String skillName = param.get("skillName") == null ? "" : param.get("skillName").toString();
       humanService.useSkill(skillName);
-      return new ResponseEntity<>(humanService.getHuman(), HttpStatus.OK);
+      return new ResponseEntity<>(humanService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
@@ -88,10 +88,10 @@ public class HumanController {
   @ResponseBody
   public ResponseEntity useWeapon(@RequestBody HashMap<String, Object> param) {
     try {
-      humanService.getHuman().checkAlive();
+      humanService.getUser().checkAlive();
       String weaponName = param.get("weaponName") == null ? "" : param.get("weaponName").toString();
       humanService.useWeapon(weaponName);
-      return new ResponseEntity<>(humanService.getHuman(), HttpStatus.OK);
+      return new ResponseEntity<>(humanService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
@@ -106,7 +106,7 @@ public class HumanController {
   @GetMapping("/userAttack")
   public ResponseEntity userAttack() {
     try {
-      humanService.getHuman().checkAlive();
+      humanService.getUser().checkAlive();
       monsterService.getMonster().checkAlive();
       humanService.attackMonster(monsterService.getMonster());
 
@@ -114,7 +114,7 @@ public class HumanController {
         humanService.levelUp();
       }
       HashMap<String, Object> responseData = new HashMap<>();
-      responseData.put("userInfo", humanService.getHuman());
+      responseData.put("userInfo", humanService.getUser());
       responseData.put("monsterInfo", monsterService.getMonster());
       return new ResponseEntity<>(responseData, HttpStatus.OK);
     } catch (MonsterDeadException e) {

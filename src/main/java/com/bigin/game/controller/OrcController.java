@@ -34,9 +34,9 @@ public class OrcController {
   @GetMapping("/selectOrc")
   public ResponseEntity selectOrc() {
     try {
-      orcService.makeOrc();
-      monsterService.setUserTribe(orcService.getOrc());
-      return new ResponseEntity<>(orcService.getOrc(), HttpStatus.OK);
+      orcService.makeUser();
+      monsterService.setUserTribe(orcService.getUser());
+      return new ResponseEntity<>(orcService.getUser(), HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>("BAD REQUEST", HttpStatus.BAD_REQUEST);
     }
@@ -49,8 +49,8 @@ public class OrcController {
   @GetMapping("/userStat")
   public ResponseEntity userStat() {
     try {
-      orcService.getOrc().checkAlive();
-      return new ResponseEntity<>(orcService.getOrc(), HttpStatus.OK);
+      orcService.getUser().checkAlive();
+      return new ResponseEntity<>(orcService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
@@ -68,10 +68,10 @@ public class OrcController {
   @ResponseBody
   public ResponseEntity useSkill(@RequestBody HashMap<String, Object> param) {
     try {
-      orcService.getOrc().checkAlive();
+      orcService.getUser().checkAlive();
       String skillName = param.get("skillName") == null ? "" : param.get("skillName").toString();
       orcService.useSkill(skillName);
-      return new ResponseEntity<>(orcService.getOrc(), HttpStatus.OK);
+      return new ResponseEntity<>(orcService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
@@ -89,10 +89,10 @@ public class OrcController {
   @ResponseBody
   public ResponseEntity useWeapon(@RequestBody HashMap<String, Object> param) {
     try {
-      orcService.getOrc().checkAlive();
+      orcService.getUser().checkAlive();
       String weaponName = param.get("weaponName") == null ? "" : param.get("weaponName").toString();
       orcService.useWeapon(weaponName);
-      return new ResponseEntity<>(orcService.getOrc(), HttpStatus.OK);
+      return new ResponseEntity<>(orcService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
@@ -107,7 +107,7 @@ public class OrcController {
   @GetMapping("/userAttack")
   public ResponseEntity userAttack() {
     try {
-      orcService.getOrc().checkAlive();
+      orcService.getUser().checkAlive();
       monsterService.getMonster().checkAlive();
       orcService.attackMonster(monsterService.getMonster());
 
@@ -115,7 +115,7 @@ public class OrcController {
         orcService.levelUp();
       }
       HashMap<String, Object> responseData = new HashMap<>();
-      responseData.put("userInfo", orcService.getOrc());
+      responseData.put("userInfo", orcService.getUser());
       responseData.put("monsterInfo", monsterService.getMonster());
       return new ResponseEntity<>(responseData, HttpStatus.OK);
     } catch (MonsterDeadException e) {
@@ -134,7 +134,7 @@ public class OrcController {
   @GetMapping("/userAttack/{uniqueSkill}")
   public ResponseEntity userAttackWithSkill(@PathVariable String uniqueSkill) {
     try {
-      orcService.getOrc().checkAlive();
+      orcService.getUser().checkAlive();
       monsterService.getMonster().checkAlive();
       orcService.attackMonsterWithSkill(monsterService.getMonster(), uniqueSkill);
 
@@ -142,7 +142,7 @@ public class OrcController {
         orcService.levelUp();
       }
       HashMap<String, Object> responseData = new HashMap<>();
-      responseData.put("userInfo", orcService.getOrc());
+      responseData.put("userInfo", orcService.getUser());
       responseData.put("monsterInfo", monsterService.getMonster());
       return new ResponseEntity<>(responseData, HttpStatus.OK);
     } catch (MonsterDeadException e) {

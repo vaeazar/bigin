@@ -78,13 +78,13 @@ public class MonsterController {
 
       switch (tribe) {
         case "human":
-          attackedUser = humanService.getHuman();
+          attackedUser = humanService.getUser();
           break;
         case "elf":
-          attackedUser = elfService.getElf();
+          attackedUser = elfService.getUser();
           break;
         case "orc":
-          attackedUser = orcService.getOrc();
+          attackedUser = orcService.getUser();
           break;
       }
 

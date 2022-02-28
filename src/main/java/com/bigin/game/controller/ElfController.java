@@ -4,9 +4,11 @@ import com.bigin.game.common.exception.MonsterDeadException;
 import com.bigin.game.common.exception.UserDeadException;
 import com.bigin.game.service.ElfService;
 import com.bigin.game.service.MonsterService;
+import com.bigin.game.service.UserService;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +35,9 @@ public class ElfController {
   @GetMapping("/selectElf")
   public ResponseEntity selectElf() {
     try {
-      elfService.makeElf();
-      monsterService.setUserTribe(elfService.getElf());
-      return new ResponseEntity<>(elfService.getElf(), HttpStatus.OK);
+      elfService.makeUser();
+      monsterService.setUserTribe(elfService.getUser());
+      return new ResponseEntity<>(elfService.getUser(), HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>("BAD REQUEST", HttpStatus.BAD_REQUEST);
     }
@@ -48,8 +50,8 @@ public class ElfController {
   @GetMapping("/userStat")
   public ResponseEntity userStat() {
     try {
-      elfService.getElf().checkAlive();
-      return new ResponseEntity<>(elfService.getElf(), HttpStatus.OK);
+      elfService.getUser().checkAlive();
+      return new ResponseEntity<>(elfService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
@@ -67,10 +69,10 @@ public class ElfController {
   @ResponseBody
   public ResponseEntity useSkill(@RequestBody HashMap<String, Object> param) {
     try {
-      elfService.getElf().checkAlive();
+      elfService.getUser().checkAlive();
       String skillName = param.get("skillName") == null ? "" : param.get("skillName").toString();
       elfService.useSkill(skillName);
-      return new ResponseEntity<>(elfService.getElf(), HttpStatus.OK);
+      return new ResponseEntity<>(elfService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
@@ -88,10 +90,10 @@ public class ElfController {
   @ResponseBody
   public ResponseEntity useWeapon(@RequestBody HashMap<String, Object> param) {
     try {
-      elfService.getElf().checkAlive();
+      elfService.getUser().checkAlive();
       String weaponName = param.get("weaponName") == null ? "" : param.get("weaponName").toString();
       elfService.useWeapon(weaponName);
-      return new ResponseEntity<>(elfService.getElf(), HttpStatus.OK);
+      return new ResponseEntity<>(elfService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
@@ -106,7 +108,7 @@ public class ElfController {
   @GetMapping("/userAttack")
   public ResponseEntity userAttack() {
     try {
-      elfService.getElf().checkAlive();
+      elfService.getUser().checkAlive();
       monsterService.getMonster().checkAlive();
       elfService.attackMonster(monsterService.getMonster());
 
@@ -114,7 +116,7 @@ public class ElfController {
         elfService.levelUp();
       }
       HashMap<String, Object> responseData = new HashMap<>();
-      responseData.put("userInfo", elfService.getElf());
+      responseData.put("userInfo", elfService.getUser());
       responseData.put("monsterInfo", monsterService.getMonster());
       return new ResponseEntity<>(responseData, HttpStatus.OK);
     } catch (MonsterDeadException e) {
@@ -133,8 +135,8 @@ public class ElfController {
   @GetMapping("/usePotion")
   public ResponseEntity usePotion() {
     try {
-      elfService.getElf().usePotion();
-      return new ResponseEntity<>(elfService.getElf(), HttpStatus.OK);
+      elfService.getUser().usePotion();
+      return new ResponseEntity<>(elfService.getUser(), HttpStatus.OK);
     } catch (UserDeadException e) {
       return new ResponseEntity<>("character is dead please select character", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {

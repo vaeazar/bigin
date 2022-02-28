@@ -45,6 +45,8 @@ public class OrcService implements UserService {
       method.invoke(orc, false);
       return "success";
     } else {
+      orc.setBerserk(orc.getBerserk() + 1);
+      method.invoke(orc, false);
       return "fail";
     }
   }
